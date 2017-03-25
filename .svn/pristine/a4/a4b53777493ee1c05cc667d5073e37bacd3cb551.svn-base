@@ -1,0 +1,27 @@
+package th.co.ais.mimo.acim.api.service;
+
+import java.util.List;
+
+import th.co.ais.mimo.acim.api.model.AuthUser;
+import th.co.ais.mimo.acim.api.model.User;
+import th.co.ais.mimo.acim.api.rest.model.UserApplicationInfoGridRequest;
+import th.co.ais.mimo.acim.api.rest.model.UserApplicationInfoGridResponse;
+import th.co.ais.mimo.acim.api.rest.model.UserInfo;
+import th.co.ais.mimo.acim.api.rest.model.UserTokenInfoGridResponse;
+import th.co.ais.mimo.acim.api.service.exception.ServiceException;
+
+public interface UserService {
+	
+	UserInfo authUser(AuthUser authUser) throws ServiceException;
+	
+	User getUserProfileByUsername(String username) throws ServiceException;
+	
+	User getUserProfileByUserId(String userId) throws ServiceException;
+	
+	List<User> getUserProfileList(String username) throws ServiceException;
+	
+	UserApplicationInfoGridResponse getApplicationByType(String type,UserApplicationInfoGridRequest request) throws ServiceException;
+	
+	UserTokenInfoGridResponse getApplicationByUserToken(UserApplicationInfoGridRequest request) throws ServiceException;
+	
+}

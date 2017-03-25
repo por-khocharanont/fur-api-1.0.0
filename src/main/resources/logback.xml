@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	
+	<!-- DOCUMENT-REFERENCE : http://logback.qos.ch/manual/index.html -->
+
+	<!-- Defining variables -->
+	<!-- Chapter 3: Logback configuration : Variable substitution -->
+	<!-- http://logback.qos.ch/manual/configuration.html#variableSubstitution -->
+	<property name="LOG_HOME_DEV" value="D:/Logs" />
+	<property name="LAYOUT_PATTERN"
+		value="%d{yyyy-MM-dd HH:mm:ss.SSS}|%level|%X{x-fur-user}|%X{x-orderRef}|%class{0}:%M:%L|%X{page}|%msg%n" />
+	<property name="WEB_FILE_NAME_PATTERN" value="fur_api.log.%d{yyyyMMdd}.%i" />
+	<property name="MAX_FILE_SIZE" value="100MB" />
+	
+ 	<!--  Properties Batch Log  
+	<property name="PATH_LOG_OM" value="D:/fur-II/Batch/app/om/log/%d{yyyyMMdd}" />
+	<property name="LOG_OM_PATTERN_RESIGN" value="resign_om.log.%d{yyyyMMdd}.%i.log" />
+	<property name="MAX_FILE_SIZE" value="100MB" />
+	<property name="LAYOUT_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS}|%msg%n" /> -->
+	<!-- Chapter 4: Appenders -->
+	<!-- http://logback.qos.ch/manual/appenders.html -->
+
+	<!-- CONSOLE APPENDER -->
+	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<pattern>${LAYOUT_PATTERN}</pattern>
+		</encoder>
+	</appender>
+	
+	<!-- APPLICATION FILE APPENDER -->
+	<appender name="devFileAppender"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_HOME_DEV}/fur-api/fur_api.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- rollover daily -->
+			<fileNamePattern>${LOG_HOME_DEV}/fur-api/${WEB_FILE_NAME_PATTERN}</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<!-- whenever the file size reaches 100MB -->
+				<maxFileSize>${MAX_FILE_SIZE}</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<pattern>${LAYOUT_PATTERN}</pattern>
+		</encoder>
+	</appender>
+	
+	<appender name="testFileAppender"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${jboss.server.log.dir}/fur-api/fur_api.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- rollover daily -->
+			<fileNamePattern>${jboss.server.log.dir}/fur-api/${WEB_FILE_NAME_PATTERN}</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<!-- or whenever the file size reaches 100MB -->
+				<maxFileSize>${MAX_FILE_SIZE}</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<pattern>${LAYOUT_PATTERN}</pattern>
+		</encoder>
+	</appender>
+	
+	<appender name="iotFileAppender"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${jboss.server.log.dir}/fur-api/fur_api.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- rollover daily -->
+			<fileNamePattern>${jboss.server.log.dir}/fur-api/${WEB_FILE_NAME_PATTERN}</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<!-- or whenever the file size reaches 100MB -->
+				<maxFileSize>${MAX_FILE_SIZE}</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<pattern>${LAYOUT_PATTERN}</pattern>
+		</encoder>
+	</appender>
+	
+	<appender name="stgFileAppender"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${jboss.server.log.dir}/fur-api/fur_api.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- rollover daily -->
+			<fileNamePattern>${jboss.server.log.dir}/fur-api/${WEB_FILE_NAME_PATTERN}</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<!-- or whenever the file size reaches 100MB -->
+				<maxFileSize>${MAX_FILE_SIZE}</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<pattern>${LAYOUT_PATTERN}</pattern>
+		</encoder>
+	</appender>
+	
+	<appender name="prodFileAppender"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${jboss.server.log.dir}/fur-api/fur_api.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- rollover daily -->
+			<fileNamePattern>${jboss.server.log.dir}/fur-api/${WEB_FILE_NAME_PATTERN}</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<!-- or whenever the file size reaches 100MB -->
+				<maxFileSize>${MAX_FILE_SIZE}</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<pattern>${LAYOUT_PATTERN}</pattern>
+		</encoder>
+	</appender>
+	
+	
+	<!-- Application Loggers -->
+	<logger name="th.cu.thesis.fur">
+		<level value="info" />
+		<appender-ref ref="${app.env}FileAppender" />
+	</logger>
+	
+	<!-- 3rdparty Loggers -->
+	<logger name="org.springframework.core">
+		<level value="info" />
+	</logger>
+	
+	<logger name="org.springframework.beans">
+		<level value="info" />
+	</logger>
+	
+	<logger name="org.springframework.context">
+		<level value="info" />
+	</logger>
+
+	<logger name="org.springframework.web">
+		<level value="info" />
+	</logger>
+	
+<!-- 	<logger name="org.mybatis"> -->
+<!-- 		<level value="debug" /> -->
+<!-- 	</logger> -->
+	
+	<logger name="com.mchange">
+		<level value="info" />
+	</logger>
+	
+	<logger name="org.apache.axis2">
+		<level value="info" />
+	</logger>
+	
+	<logger name="th.cu.thesis.fur.api.repository">
+		<level value="info" />
+	</logger>
+	
+	<root level="INFO">
+		<appender-ref ref="console" />
+	</root>
+	
+	
+</configuration>

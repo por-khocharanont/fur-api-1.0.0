@@ -1,0 +1,65 @@
+package th.cu.thesis.fur.api.repository;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.mapping.StatementType;
+
+import th.cu.thesis.fur.api.model.UserAppRole;
+
+public interface UserAppRoleRepository {
+	static final String SQL_SELECT_USER_APP_ROLE_BY_APP_ROLE_ID_AND_USER_ID = "SELECT * FROM [USER_APP_ROLE] WHERE APP_ROLE_ID = #{appRoleId} AND USER_ID = #{userId}";
+	
+	static final String SQL_SELECT_USER_APP_ROLE_BY_APP_ROLE_ID = "SELECT * FROM [USER_APP_ROLE] WHERE APP_ROLE_ID = #{appRoleId}";
+	
+	static final String SQL_DELETE_USER_APP_ROLE_BY_APP_ROLE_ID_AND_USER_ID = "DELETE FROM USER_APP_ROLE WHERE "
+			+ "APP_ROLE_ID = #{appRoleId} AND USER_ID = #{userId}";
+	
+	static final String SQL_UPDATE_USER_APP_ROLE_BY_APP_ROLE_ID_AND_USER_ID = " UPDATE USER_APP_ROLE SET "
+			+ "APP_ROLE_ID = #{appRoleId},"
+			+ "UR_ID = #{urId},"
+			+ "PERIOD_TYPE = #{periodType},"
+			+ "START_TIME = #{startTime},"
+			+ "END_TIME = #{endTime},"
+			+ "UPDATED_BY = #{updatedBy},"
+			+ "UPDATED_DATE = GETDATE() "
+			+ "WHERE APP_ROLE_ID = #{rolePastId} AND USER_ID = #{userId}";
+	
+	static final String SQL_INSERT_USER_APP_ROLE = "INSERT INTO USER_APP_ROLE ([USER_APP_ROLE_ID]"
+			+ ",[APP_ROLE_ID],[UR_ID],[USER_ID],[PERIOD_TYPE],[START_TIME]"
+			+ ",[END_TIME],[CREATED_DATE],[CREATED_BY],[UPDATED_DATE],[UPDATED_BY])"
+			+ " VALUES"
+			+ " (#{userAppRoleId}"
+			+ " ,#{appRoleId}"
+			+ " ,#{urId}"
+			+ " ,#{userId}"
+			+ " ,#{periodType}"
+			+ " ,#{startTime}"
+			+ " ,#{endTime}"
+			+ " ,GETDATE()"
+			+ " ,#{createdBy}"
+			+ " ,GETDATE()"
+			+ " ,#{updatedBy})";
+	
+	@Update(SQL_UPDATE_USER_APP_ROLE_BY_APP_ROLE_ID_AND_USER_ID)
+	public void updateUserAppRole(UserAppRole userAppRole,@Param("rolePastId") String rolePastId) throws RuntimeException;
+	
+	@Insert(SQL_INSERT_USER_APP_ROLE)
+	public void insertUserAppRole(UserAppRole userAppRole) throws RuntimeException;
+	
+	@Delete(SQL_DELETE_USER_APP_ROLE_BY_APP_ROLE_ID_AND_USER_ID)
+	public void deleteUserAppRoleByAppRoleIdAndUserId(@Param("appRoleId") String appRoleId,@Param("userId") String userId) throws RuntimeException;
+	
+	@Select(SQL_SELECT_USER_APP_ROLE_BY_APP_ROLE_ID)
+	@Options(statementType = StatementType.CALLABLE, useCache = true)
+	public List<UserAppRole> selectUserAppRoleByAppRoleId(@Param("appRoleId") String appRoleId) throws RuntimeException;
+
+	@Select(SQL_SELECT_USER_APP_ROLE_BY_APP_ROLE_ID_AND_USER_ID)
+	@Options(statementType = StatementType.CALLABLE, useCache = true)
+	public UserAppRole selectUserAppRoleByAppRoleIdAndUserId(@Param("appRoleId") String appRoleId,@Param("userId") String userId) throws RuntimeException;
+}

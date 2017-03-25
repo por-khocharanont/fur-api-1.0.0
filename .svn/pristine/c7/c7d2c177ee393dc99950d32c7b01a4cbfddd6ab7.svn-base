@@ -1,0 +1,28 @@
+package th.co.ais.mimo.acim.api.rest.model.om;
+
+import java.util.List;
+
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+
+@XStreamAlias("NewDataSet")
+public class ListResignedUserProfileResponse {
+	
+	@XStreamAlias("Permission")
+	private Permission permission;
+	@XStreamAlias("Table")
+	private List<ResignedUserProfile> resignedUserProfile;
+	
+	public Permission getPermission() {
+		return permission;
+	}
+	public void setPermission(Permission permission) {
+		this.permission = permission;
+	}
+	public List<ResignedUserProfile> getResignedUserProfile() {
+		return resignedUserProfile;
+	}
+	public void setResignedUserProfile(List<ResignedUserProfile> resignedUserProfile) {
+		this.resignedUserProfile = resignedUserProfile;
+	}
+
+}

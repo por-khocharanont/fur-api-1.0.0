@@ -1,0 +1,9 @@
+package th.co.ais.mimo.acim.api.validation;
+
+import th.co.ais.mimo.acim.api.service.exception.ServiceException;
+
+public interface Validator<T> {
+	
+	public void validate(T t) throws ServiceException;
+
+}

@@ -1,0 +1,118 @@
+package th.cu.thesis.fur.api.model;
+
+import java.util.Date;
+
+public class AppOwnerMember {
+	private String appOwnerMemberId;
+	private String appOwnerTeamId;
+	private String userId;
+	private String username;
+	private String enfullname;
+	private Date createdDate;
+	private String createdBy;
+	private Date updatedDate;
+	private String updatedBy;
+
+	public AppOwnerMember() {
+	}
+
+	public String getAppOwnerMemberId() {
+		return appOwnerMemberId;
+	}
+
+	public void setAppOwnerMemberId(String appOwnerMemberId) {
+		this.appOwnerMemberId = appOwnerMemberId;
+	}
+
+	public String getAppOwnerTeamId() {
+		return appOwnerTeamId;
+	}
+
+	public void setAppOwnerTeamId(String appOwnerTeamId) {
+		this.appOwnerTeamId = appOwnerTeamId;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
+	public Date getCreatedDate() {
+		return createdDate;
+	}
+
+	
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
+	}
+
+	public String getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public Date getUpdatedDate() {
+		return updatedDate;
+	}
+
+	
+	public void setUpdatedDate(Date updatedDate) {
+		this.updatedDate = updatedDate;
+	}
+
+	public String getUpdatedBy() {
+		return updatedBy;
+	}
+
+	public void setUpdatedBy(String updatedBy) {
+		this.updatedBy = updatedBy;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getEnfullname() {
+		return enfullname;
+	}
+
+	public void setEnfullname(String enfullname) {
+		this.enfullname = enfullname;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("AppOwnerMember [appOwnerMemberId=");
+		builder.append(appOwnerMemberId);
+		builder.append(", appOwnerTeamId=");
+		builder.append(appOwnerTeamId);
+		builder.append(", userId=");
+		builder.append(userId);
+		builder.append(", username=");
+		builder.append(username);
+		builder.append(", enfullname=");
+		builder.append(enfullname);
+		builder.append(", createdDate=");
+		builder.append(createdDate);
+		builder.append(", createdBy=");
+		builder.append(createdBy);
+		builder.append(", updatedDate=");
+		builder.append(updatedDate);
+		builder.append(", updatedBy=");
+		builder.append(updatedBy);
+		builder.append("]");
+		return builder.toString();
+	}
+
+}

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans 
+	xmlns="http://www.springframework.org/schema/mvc"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mybatis="http://mybatis.org/schema/mybatis-spring"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring.xsd 
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd">
+
+	<!-- DispatcherServlet Context: defines this servlet's request-processing 
+		infrastructure -->
+	<tx:annotation-driven transaction-manager="transactionManager" />
+	<!-- Enables the Spring MVC @Controller programming model -->
+	<context:component-scan base-package="th.co.ais.mimo.acim.api" />
+	<mvc:annotation-driven />
+	
+	<!-- Enable AspectJ style of Spring AOP -->
+	<aop:aspectj-autoproxy />
+	
+	<beans:bean id="messageSource"
+		class="org.springframework.context.support.ResourceBundleMessageSource">
+		<beans:property name="basename" value="message/message" />
+	</beans:bean>
+
+	<context:property-placeholder
+		location="/WEB-INF/conf/acim-api.${app.env}.properties"
+		ignore-unresolvable="false" />
+	<!-- Handles HTTP GET requests for /resources/** by efficiently serving 
+		up static resources in the ${webappRoot}/resources directory -->
+	<resources mapping="/resources/**" location="/resources/" />
+
+	<!-- Resolves views selected for rendering by @Controllers to .jsp resources 
+		in the /WEB-INF/views directory -->
+<!-- 	<beans:bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<beans:property name="prefix" value="/WEB-INF/views/" />
+		<beans:property name="suffix" value=".jsp" />
+	</beans:bean> -->
+	
+	<!-- Thymeleft SpringMVC4
+		http://www.thymeleaf.org/index.html
+		http://www.thymeleaf.org/doc/tutorials/2.1/thymeleafspring.html -->
+		
+	<beans:bean id="emailTemplateResolver" class="org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver">
+	  <beans:property name="prefix" value="/WEB-INF/views/" />
+	  <beans:property name="suffix" value=".html" />
+	  <beans:property name="templateMode" value="HTML5" />
+	  <beans:property name="characterEncoding" value="UTF-8"/>
+	  <beans:property name="cacheable" value="false"/>
+	</beans:bean>
+	<beans:bean id="templateEngine" class="org.thymeleaf.spring4.SpringTemplateEngine">
+		<beans:property name="templateResolver" ref="emailTemplateResolver" />
+	</beans:bean>
+	
+	<beans:bean id="viewResolver" class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
+		<beans:property name="templateEngine" ref="templateEngine" />
+		<beans:property name="characterEncoding" value="UTF-8"/>
+	</beans:bean>
+	
+	<!-- Spring Email -->
+	<beans:bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<beans:property name="host" value="127.0.0.1" />
+		<beans:property name="port" value="22" />
+		<beans:property name="protocol" value="smtp" />
+<!-- 		<beans:property name="username" value="username" />
+		<beans:property name="password" value="password" /> -->
+		<beans:property name="javaMailProperties">
+		<beans:props> <!-- properties can be found here http://edelstein.pebbles.cs.cmu.edu/jadeite/main.php?api=javamail&state=package&package=com.sun.mail.smtp -->
+                	<beans:prop key="mail.transport.protocol">smtp</beans:prop>
+                	<beans:prop key="mail.smtp.auth">false</beans:prop>
+                	<beans:prop key="mail.smtp.starttls.enable">false</beans:prop>
+                	<beans:prop key="mail.smtp.ehlo">false</beans:prop> <!-- may be true in your application-->
+                	<beans:prop key="mail.debug">true</beans:prop>
+		</beans:props>
+		</beans:property>
+	</beans:bean>
+	
+	<!-- DB DataSource -->
+	<beans:bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+		<beans:property name="driverClass" value="${jdbc.driverClassName}" />
+		<beans:property name="jdbcUrl" value="${jdbc.url}" />
+		<beans:property name="user" value="${jdbc.username}" />
+		<beans:property name="password" value="${jdbc.password}" />
+		<beans:property name="checkoutTimeout" value="${jdbc.checkoutTimeout}" />
+		<beans:property name="idleConnectionTestPeriod" value="${jdbc.idleConnectionTestPeriod}" />
+		<beans:property name="maxIdleTime" value="${jdbc.maxIdleTime}" />
+		<beans:property name="maxPoolSize" value="${jdbc.maxPoolSize}" />
+		<beans:property name="minPoolSize" value="${jdbc.minPoolSize}" />
+		<beans:property name="maxStatements" value="${jdbc.maxStatements}" />
+		<beans:property name="testConnectionOnCheckout" value="${jdbc.testConnection}" />
+		<beans:property name="numHelperThreads" value="${jdbc.numHelperThreads}" />
+	</beans:bean>
+
+	<!-- mybatis SqlSessionFatory refer to spring dataSource -->
+	<beans:bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<beans:property name="dataSource" ref="dataSource" />
+		<beans:property name="configLocation" value="classpath:mybatis-config.xml" />
+	</beans:bean>
+	<!-- Transaction refer to spring dataSource -->
+	<beans:bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <beans:property name="dataSource" ref="dataSource" />
+    </beans:bean>  
+    
+	<!-- mybatis scan mapper package -->
+	<beans:bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<beans:property name="basePackage" value="th.co.ais.mimo.acim.api.repository" />
+	</beans:bean>
+	
+	<!-- mybatis scan mapper package -->
+	<mybatis:scan base-package="th.co.ais.mimo.acim.api.repository" />
+	
+	<!-- multipartResolver for upload -->
+	<beans:bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/>
+</beans:beans>

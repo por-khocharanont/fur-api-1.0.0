@@ -1,0 +1,50 @@
+package th.cu.thesis.fur.api.rest.model;
+
+
+public class UserRequestListUser {
+	private String name;
+	private String userName;
+	private Integer userId;
+	public UserRequestListUser() {
+
+	}
+	
+	public Integer getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Integer userId) {
+		this.userId = userId;
+	}
+
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getUserName() {
+		return userName;
+	}
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("UserRequestListUser [name=");
+		builder.append(name);
+		builder.append(", userName=");
+		builder.append(userName);
+		builder.append(", userId=");
+		builder.append(userId);
+		builder.append("]");
+		return builder.toString();
+	}
+
+
+	
+	
+	
+}

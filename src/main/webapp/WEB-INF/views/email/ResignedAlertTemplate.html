@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<body>
+<table style="border-collapse: collapse;  border: 1px solid black; ">
+  <tr >
+    <td width="200px" height ="40px" bgcolor="#8dc63f" style="border-collapse: collapse;  border: 1px solid #ffffff; padding-left: 20px;"><font size="3" color="#ffffff"><B>Username</B></font></td>
+    <td width="500px" height ="40px" bgcolor="#f2f2f2" style="border-collapse: collapse;  border: 1px solid #ffffff; padding-left: 20px;">
+    				<div  th:text="${username}"></div>
+    </td>
+  </tr>
+  
+  <tr>
+   <td width="200px" height ="40px" bgcolor="#8dc63f" style="border-collapse: collapse;  border: 1px solid #ffffff; padding-left: 20px;"><font size="3" color="#ffffff"><B>Application Approver</B></font></td>
+    <td width="500px" height ="40px" bgcolor="#f2f2f2" style="border-collapse: collapse;  border: 1px solid #ffffff; padding-left: 20px;">
+    				<div  th:each="app : ${applications}" th:text="${app}"></div>
+    </td>
+  </tr>
+  
+  <tr>
+    <td width="200px" height ="40px" bgcolor="#8dc63f" style="border-collapse: collapse;  border: 1px solid #ffffff; padding-left: 20px;"><font size="3" color="#ffffff"><B>UR Approver </B></font></td>
+    <td width="500px" height ="40px" bgcolor="#f2f2f2" style="border-collapse: collapse;  border: 1px solid #ffffff; padding-left: 20px;">
+    				<div  th:each="ur : ${urs}" th:text="${ur}"></div>
+    </td>
+  </tr>
+  
+  <tr>
+    <td width="200px" height ="40px" bgcolor="#8dc63f" style="border-collapse: collapse;  border: 1px solid #ffffff; padding-left: 20px;"><font size="3" color="#ffffff"><B>User was Role Iden</B></font></td>
+    <td width="500px" height ="40px" bgcolor="#f2f2f2" style="border-collapse: collapse;  border: 1px solid #ffffff; padding-left: 20px;">
+		<div  th:if="${isRoleIden.isEmpty()}">No</div>
+		<div  th:if="${!isRoleIden.isEmpty()}">Yes</div>
+    </td>
+  </tr>
+  
+</table>
+</body>
+</html>

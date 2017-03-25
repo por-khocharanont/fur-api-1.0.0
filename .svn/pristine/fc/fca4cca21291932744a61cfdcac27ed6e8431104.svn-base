@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<body>
+
+<table style="border-collapse: collapse;  border: 1px solid black; ">
+
+
+
+  <tr >
+    <td width="200px" height ="40px" bgcolor="#8dc63f" style="border-collapse: collapse;  border: 1px solid #ffffff; padding-left: 20px;"><font size="3" color="#ffffff"><B>Request No </B></font></td>
+    <td width="500px" height ="40px" bgcolor="#f2f2f2" style="border-collapse: collapse;  border: 1px solid #ffffff; padding-left: 20px;"  th:text="${userrequestNo}"  ></td>
+    
+  </tr>
+  <tr>
+   <td width="200px" height ="40px" bgcolor="#8dc63f" style="border-collapse: collapse;  border: 1px solid #ffffff; padding-left: 20px;"><font size="3" color="#ffffff"><B>Request Date </B></font></td>
+    <td width="500px" height ="40px" bgcolor="#f2f2f2" style="border-collapse: collapse;  border: 1px solid #ffffff; padding-left: 20px;" th:text="${date}" ></td>
+  </tr>
+  <tr>
+    <td width="200px" height ="40px" bgcolor="#8dc63f" style="border-collapse: collapse;  border: 1px solid #ffffff; padding-left: 20px;"><font size="3" color="#ffffff"><B>UR Type </B></font></td>
+    <td width="500px" height ="40px" bgcolor="#f2f2f2" style="border-collapse: collapse;  border: 1px solid #ffffff; padding-left: 20px;" th:text="${urType}" ></td>
+    
+    
+  </tr>
+  <tr>
+
+    
+    <td width="200px" height ="40px" bgcolor="#8dc63f" style="border-collapse: collapse;  border: 1px solid #ffffff; padding-left: 20px;"><font size="3" color="#ffffff"><B>Request Type </B></font></td>
+    <td width="500px" height ="40px" bgcolor="#f2f2f2" style="border-collapse: collapse;  border: 1px solid #ffffff; padding-left: 20px;" th:text="${requestType}"></td>
+    
+    
+  </tr>
+  <tr>
+ 
+    
+    
+    <td width="200px" height ="40px" bgcolor="#8dc63f" style="border-collapse: collapse;  border: 1px solid #ffffff; padding-left: 20px;"><font size="3" color="#ffffff"><B>Request User </B></font></td>
+    <td width="500px" height ="40px" bgcolor="#f2f2f2" style="border-collapse: collapse;  border: 1px solid #ffffff; padding-left: 20px;" th:text="${requestUser}"></td>
+    
+    
+  </tr>
+  
+    <tr>
+ 
+    
+     <td width="200px" height ="40px" bgcolor="#8dc63f" style="border-collapse: collapse;  border: 1px solid #ffffff; padding-left: 20px;"><font size="3" color="#ffffff"><B>User Request Name </B></font></td>
+    <td width="500px" height ="40px" bgcolor="#f2f2f2" style="border-collapse: collapse;  border: 1px solid #ffffff; padding-left: 20px;" th:text="${nameUser}"></td>
+    
+    
+    
+  </tr>
+   <tr>
+
+    
+     <td width="200px" height ="40px" bgcolor="#8dc63f" style="border-collapse: collapse;  border: 1px solid #ffffff; padding-left: 20px;"><font size="3" color="#ffffff"><B>Subject</B></font></td>
+    <td width="500px" height ="40px" bgcolor="#f2f2f2" style="border-collapse: collapse;  border: 1px solid #ffffff; padding-left: 20px;" th:text="${subject}"></td>
+    
+    
+  </tr>
+   <tr>
+ 
+    
+     <td width="200px" height ="40px" bgcolor="#8dc63f" style="border-collapse: collapse;  border: 1px solid #ffffff; padding-left: 20px;"><font size="3" color="#ffffff"><B>Detail</B></font></td>
+    <td width="500px" height ="40px" bgcolor="#f2f2f2" style="border-collapse: collapse;  border: 1px solid #ffffff; padding-left: 20px;" th:text="${detail}"></td>
+    
+  </tr>
+  
+   <tr>
+ 
+    
+     <td width="200px" height ="40px" bgcolor="#8dc63f" style="border-collapse: collapse;  border: 1px solid #ffffff; padding-left: 20px;"><font size="3" color="#ffffff"><B>Website</B></font></td>
+    <td width="500px" height ="40px" bgcolor="#f2f2f2" style="border-collapse: collapse;  border: 1px solid #ffffff; padding-left: 20px; "> <a th:href="${domainAcim}" th:text="${domainAcim}"></a>&nbsp;</td>
+    
+  </tr>
+  
+</table>
+<p>สามารถตรวจสอบการขอ UR ที่ได้ Watch List<BR>สามารถตรวจสอบ Approve UR ได้ที่ To Do List</p>
+</body>
+</html>

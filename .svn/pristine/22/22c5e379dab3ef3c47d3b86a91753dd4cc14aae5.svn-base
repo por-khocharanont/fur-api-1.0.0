@@ -1,0 +1,164 @@
+package th.co.ais.mimo.acim.api.service.impl;
+
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import th.co.ais.mimo.acim.api.model.OrgFromAcim;
+import th.co.ais.mimo.acim.api.repository.BatchUpdateOrgRepository;
+import th.co.ais.mimo.acim.api.repository.BatchUserReOrgRepository;
+import th.co.ais.mimo.acim.api.rest.model.Batch;
+import th.co.ais.mimo.acim.api.rest.model.om.ListOrgAllResponse;
+import th.co.ais.mimo.acim.api.rest.model.om.ListOrgTypeAllResponse;
+import th.co.ais.mimo.acim.api.rest.model.om.OrgProfile;
+import th.co.ais.mimo.acim.api.rest.model.om.OrgTypeList;
+import th.co.ais.mimo.acim.api.service.BatchOrgUpdateService;
+import th.co.ais.mimo.acim.api.service.OmWebService;
+import th.co.ais.mimo.acim.api.service.exception.ServiceException;
+import th.co.ais.mimo.acim.api.util.CommonUtil;
+
+@Service("batchOrgUpdateService")
+public class BatchOrgUpdateServiceImpl implements BatchOrgUpdateService{
+
+	private static final Logger logger = LoggerFactory.getLogger(BatchOrgUpdateServiceImpl.class);
+	
+	@Autowired
+	OmWebService omWebService;
+	
+	@Autowired 
+	BatchUpdateOrgRepository batchUpdateOrgRepository;
+	
+	@Autowired
+	BatchUserReOrgRepository batchUserReOrgRepository;
+	
+	@Override
+	public Batch updateOrg() throws ServiceException { 
+		
+		Batch batch;
+		final String batchName = "Batch-NewEmployee";
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+		String date = formatter.format(new Date());
+		try {
+			ListOrgAllResponse res = omWebService.getOrganize();
+			String orgTypeBackOffice = "1"; //BackOffice
+			if(res == null ){
+				batch = new Batch();
+				batch.setBatchId(CommonUtil.generateUUID());
+				batch.setBatchName("Batch-UpdateOrg");
+				batch.setStatus("200"); 
+				batch.setMessage("Sucess");
+				batch.setRunTime(new Date());
+				batch.setCreatedBy("SYSTEM-ADMIN");
+				batch.setUpdatedBy("SYSTEM-ADMIN");
+				batch.setCreatedDate(new Date());
+				batch.setUpdatedDate(new Date());
+				batchUserReOrgRepository.insertBatch(batch);
+			}else{
+				logger.info("###### Start {} : {} ######",batchName,date);
+				List<OrgProfile> orgProfiles = res.getOrgAll();
+				if(orgProfiles != null){
+					for(OrgProfile orgProfile : orgProfiles ){
+						logger.info("selectOrg ,Orgcode:{} , {} : {}",orgProfile.getOrgcode(),batchName,date);
+						 OrgFromAcim orgFromAcim =  batchUpdateOrgRepository.selectOrg(orgProfile.getOrgcode());
+						//Update
+						if(orgFromAcim != null){ 
+							logger.info("Obj orgFromAcim {} , {} : {}",orgFromAcim,batchName,date);
+							OrgFromAcim orgUpdate = new OrgFromAcim();
+							orgUpdate.setOrgcode(orgProfile.getOrgcode());
+							orgUpdate.setOrgType(orgTypeBackOffice);
+							orgUpdate.setOrgname(orgProfile.getOrgname());
+							orgUpdate.setOrgdesc(orgProfile.getOrgdesc());
+							orgUpdate.setOrglevel(orgProfile.getOrglevel());
+							orgUpdate.setHigherorg(orgProfile.getHigherorg());
+							orgUpdate.setHigherorgname(orgProfile.getHigherorgname());
+							orgUpdate.setHigherorgdesc(orgProfile.getHigherorgdesc());
+							orgUpdate.setHigherorglevel(orgProfile.getHigherorglevel());
+							batchUpdateOrgRepository.UpdateOrganize(orgUpdate);
+							logger.info("Update organize {} , {} : {}",orgUpdate,batchName,date);
+						}else{	
+							 logger.info("Obj orgFromAcim is null {} : {}",batchName,date);
+							OrgFromAcim orgInsert = new OrgFromAcim();
+							orgInsert.setOrgcode(orgProfile.getOrgcode());
+							orgInsert.setOrgname(orgProfile.getOrgname());
+							orgInsert.setOrgdesc(orgProfile.getOrgdesc());
+							orgInsert.setOrglevel(orgProfile.getOrglevel());
+							orgInsert.setHigherorg(orgProfile.getHigherorg());
+							orgInsert.setHigherorgname(orgProfile.getHigherorgname());
+							orgInsert.setHigherorgdesc(orgProfile.getHigherorgdesc());
+							orgInsert.setHigherorglevel(orgProfile.getHigherorglevel());
+							orgInsert.setOrgType(orgTypeBackOffice);					
+							batchUpdateOrgRepository.InsertOrganize(orgInsert);
+							logger.info("Insert organize {} , {} : {}",orgInsert,batchName,date);
+						}
+					}
+				}
+				//Update OrgType.
+				logger.info("Update orgType {} : {}",batchName,date);
+				ListOrgTypeAllResponse orgTypeList = omWebService.getUserTypeByOrgCode();
+				if(orgTypeList != null){
+					logger.info("Obj orgTypeList {} , {} : {}",orgTypeList,batchName,date);
+					List<OrgTypeList> orgTypes = orgTypeList.getOrgTypeList();
+					if(orgTypes!=null){
+						logger.info("Obj orgTypes {} , {} : {}",orgTypes,batchName,date);
+						for(OrgTypeList orgType : orgTypes){
+							logger.info("selectOrg orgcode : {} , {} : {}",orgType.getOrgcode(),batchName,date);
+							OrgFromAcim orgAcim =  batchUpdateOrgRepository.selectOrg(orgType.getOrgcode());
+							if(orgAcim != null){
+								logger.info("Obj orgAcim {} , {} : {}",orgAcim,batchName,date);
+								String orgTypeToUpper = orgType.getOrgType().toUpperCase();
+								String orgTypeNo =null;
+								if(orgTypeToUpper.equals("ACC")){ 
+									orgTypeNo = "2";
+								}
+								else if(orgTypeToUpper.equals("BRANCH")){
+									orgTypeNo = "3";
+								}else if(orgTypeToUpper.equals("OUTLET")){
+									orgTypeNo = "4";
+								}else{
+									orgTypeNo = "1";
+								}
+								batchUpdateOrgRepository.UpdateOrganizeOrgType(orgType.getOrgcode(), orgTypeNo);
+								logger.info("Update organize with orgtype {} {} , {} : {}",orgType.getOrgcode(),orgTypeNo,batchName,date);
+							}
+						}
+					}
+				}
+				batch = new Batch();
+				batch.setBatchId(CommonUtil.generateUUID());
+				batch.setBatchName("Batch-UpdateOrg");
+				batch.setStatus("200"); 
+				batch.setMessage("Sucess");
+				batch.setRunTime(new Date());
+				batch.setCreatedBy("SYSTEM-ADMIN");
+				batch.setUpdatedBy("SYSTEM-ADMIN");
+				batch.setCreatedDate(new Date());
+				batch.setUpdatedDate(new Date());
+				batchUserReOrgRepository.insertBatch(batch);
+				logger.info("###### Completed process {} : {} ######",batchName,date);
+			}
+		} catch (Exception e) {
+			batch = new Batch();
+			batch.setBatchId(CommonUtil.generateUUID());
+			batch.setBatchName("Batch-UpdateOrg");
+			batch.setStatus("201"); 
+			batch.setMessage("Fail");
+			batch.setRunTime(new Date());
+			batch.setCreatedBy("SYSTEM-ADMIN");
+			batch.setUpdatedBy("SYSTEM-ADMIN");
+			batch.setCreatedDate(new Date());
+			batch.setUpdatedDate(new Date());
+			batchUserReOrgRepository.insertBatch(batch);
+			logger.error("###### Processed fail {} , {} ######",batchName,date);
+			throw ServiceException.get500SystemError(e);
+		}
+		return batch;
+	}
+	
+}

@@ -1,0 +1,225 @@
+package th.co.ais.mimo.acim.api.util;
+
+import java.util.Calendar;
+import java.util.Date;
+
+import org.apache.commons.lang3.StringUtils;
+
+import th.co.ais.mimo.acim.api.rest.model.ApplicationReportParams;
+import th.co.ais.mimo.acim.api.rest.model.EligibleReportParams;
+import th.co.ais.mimo.acim.api.rest.model.UrReportParams;
+
+public class GenerateSqlReport {
+	public static String exportExcelApplicationDefault (ApplicationReportParams params){
+		String appName = params.getAppName();
+		String authenType = params.getAuthenticationType();
+		String type = params.getType();
+		String status =  params.getStatus();
+		String periodType = params.getPeriodType();
+		String username = params.getUsername();
+		StringBuilder sqlBuilder = new StringBuilder();
+		sqlBuilder.append("			SELECT   ");
+		sqlBuilder.append(" 				  APP.APP_ID ");
+		sqlBuilder.append(" 				  ,APP.APP_NAME ");
+		sqlBuilder.append(" 				  ,APP_ROLE.APP_ROLE_ID ");
+		sqlBuilder.append(" 				  ,APP_ROLE.APP_ROLE_NAME ");
+		sqlBuilder.append(" 				  ,(CASE WHEN APP.TYPE = '1' THEN 'Application' WHEN APP.TYPE = '2' THEN 'Telecom' END ) TYPE ");
+		sqlBuilder.append(" 				  ,(CASE WHEN APP.STATUS = '1' THEN 'Active' WHEN APP.STATUS = '2' THEN 'InActive' END )  STATUS ");
+		sqlBuilder.append(" 				  ,(CASE WHEN USER_APP_ROLE.PERIOD_TYPE =1 THEN 'Permanent' ");
+//		if(StringUtils.isNotEmpty(periodType)&&StringUtils.isNotBlank(periodType)){
+//			if("2".equals("periodType")){
+			sqlBuilder.append(" WHEN USER_APP_ROLE.PERIOD_TYPE = 2 THEN 'Temporary' ");
+//			}
+//		}
+		sqlBuilder.append("   END) PERIOD_TYPE  ");		
+		sqlBuilder.append(" 				  ,[USER].USERNAME ");
+		sqlBuilder.append(" 				  ,USER_APP_ROLE.START_TIME ");
+		sqlBuilder.append(" 				  ,USER_APP_ROLE.END_TIME ");
+		sqlBuilder.append(" 			FROM APP ");
+		sqlBuilder.append(" 			INNER JOIN APP_ROLE ON APP.APP_ID = APP_ROLE.APP_ID  ");
+		if(StringUtils.isNotEmpty(appName)&&StringUtils.isNotBlank(appName)){
+			sqlBuilder.append(" 			AND APP.APP_NAME LIKE $P{appName}  ");
+			params.setAppName(CommonUtil.toSqlLikeFormat(appName));
+		}
+		if(StringUtils.isNotEmpty(type)&&StringUtils.isNotBlank(type)){
+			sqlBuilder.append(" 			AND APP.TYPE =$P{type} ");
+		}
+		if(StringUtils.isNotEmpty(status)&&StringUtils.isNotBlank(status)){
+			sqlBuilder.append(" 			AND APP.STATUS=$P{status} ");
+		}
+		sqlBuilder.append(" 			INNER JOIN APP_AUTHEN ON APP_AUTHEN.APP_ID = APP.APP_ID ");
+		if(StringUtils.isNotEmpty(authenType)&&StringUtils.isNotBlank(authenType)){
+			sqlBuilder.append(" 			AND APP_AUTHEN.AUTHEN_TYPE_NAME = $P{authenticationType} ");	
+		}
+		sqlBuilder.append(" 			INNER JOIN USER_APP_ROLE ON  APP_ROLE.APP_ROLE_ID = USER_APP_ROLE.APP_ROLE_ID ");
+		if(StringUtils.isNotEmpty(periodType)&&StringUtils.isNotBlank(periodType)){
+		sqlBuilder.append(" 			AND USER_APP_ROLE.PERIOD_TYPE = $P{periodType} ");
+			if("2".equals(periodType)){
+				sqlBuilder.append(" 			AND USER_APP_ROLE.START_TIME BETWEEN CONVERT(datetime, $P{startDate}, 103) AND CONVERT(datetime, $P{endDate}, 103)");
+			}
+		}
+		sqlBuilder.append(" 			INNER JOIN [USER] ON [USER].USER_ID = USER_APP_ROLE.USER_ID ");
+		if(StringUtils.isNotEmpty(username)&&StringUtils.isNotBlank(username)){
+			sqlBuilder.append("  AND [USER].USERNAME LIKE $P{username} ");
+			params.setUsername(CommonUtil.toSqlLikeFormat(username));
+		}
+		sqlBuilder.append("GROUP BY APP.APP_ID ,APP.APP_NAME ,APP_ROLE.APP_ROLE_ID 	,APP_ROLE.APP_ROLE_NAME,[USER].USERNAME ,APP.TYPE,APP.STATUS,USER_APP_ROLE.PERIOD_TYPE ,USER_APP_ROLE.END_TIME ,USER_APP_ROLE.START_TIME  ");
+		sqlBuilder.append("ORDER BY APP.APP_NAME,APP_ROLE.APP_ROLE_NAME ");
+		return sqlBuilder.toString();
+	}
+	public static String exportExcelUrDefault(UrReportParams paramsUr) {
+		String requestNo =paramsUr.getRequestNo();
+		String urNo =paramsUr.getUrNo();
+		String requestType =paramsUr.getRequestType();
+		String urStatus =paramsUr.getUrStatus();
+		String urNode =paramsUr.getUrNode();
+		String urFlow =paramsUr.getUrFlow();
+		String userList =paramsUr.getUserList();
+		String appName =paramsUr.getAppName();
+		String type =paramsUr.getType();
+		String userType =paramsUr.getUserType();
+		String authorUser =paramsUr.getAuthorUser();
+		String requestUrBy = paramsUr.getRequestUrBy();
+		Date startDate=null,endDate=null,startDateUFU=null,endDateUFU=null;
+		if(StringUtils.isNotEmpty(paramsUr.getStartDate())&&StringUtils.isNotBlank(paramsUr.getStartDate())){
+			 startDate = CommonUtil.textToDate(paramsUr.getStartDate());
+		}
+		if(StringUtils.isNotEmpty(paramsUr.getEndDate())&&StringUtils.isNotBlank(paramsUr.getEndDate())){
+			 endDate = CommonUtil.textToDate(paramsUr.getEndDate());
+			 endDate = CommonUtil.getDateForSearchAtEndDate(endDate);
+		}
+		if(StringUtils.isNotEmpty(paramsUr.getStartDateUFU())&&StringUtils.isNotBlank(paramsUr.getStartDateUFU())){
+			startDateUFU = CommonUtil.textToDate(paramsUr.getStartDateUFU());
+		}
+		if(StringUtils.isNotEmpty(paramsUr.getEndDateUFU())&&StringUtils.isNotBlank(paramsUr.getEndDateUFU())){
+			endDateUFU = CommonUtil.textToDate(paramsUr.getEndDateUFU());
+			endDateUFU = CommonUtil.getDateForSearchAtEndDate(endDateUFU);
+		}		
+		StringBuilder sqlBuilder = new StringBuilder();
+		sqlBuilder.append("	SELECT REQUEST_NO.REQUEST_NO 	   ");
+		sqlBuilder.append("	,UR.UR_ID 	 ");
+		sqlBuilder.append("	,CONVERT(VARCHAR(25),REQUEST_NO.CREATED_DATE,105) REQUEST_DATE  ");
+		sqlBuilder.append("	,REQUEST_NO.USERNAME RequestBy ");
+		sqlBuilder.append("	, (CASE WHEN REQUEST_NO.UR_TYPE = 1 THEN 'Application' WHEN REQUEST_NO.UR_TYPE = 2 THEN 'Group Application' WHEN REQUEST_NO.UR_TYPE = 3 THEN 'ACC'  ");
+		sqlBuilder.append("	WHEN REQUEST_NO.UR_TYPE = 4 THEN 'Branch' WHEN REQUEST_NO.UR_TYPE = 5 THEN 'Outlet' WHEN REQUEST_NO.UR_TYPE = 6 THEN 'Telecom' END ");
+		sqlBuilder.append("	) UR_TYPE ");
+		sqlBuilder.append("	,(CASE WHEN UR.REQUEST_TYPE=1 THEN 'New' WHEN UR.REQUEST_TYPE=2 THEN 'Terminate' WHEN UR.REQUEST_TYPE=3 THEN 'Change' END) REQUEST_TYPE ");
+		sqlBuilder.append("	,(CASE WHEN UR.STATUS=1 THEN 'Process' WHEN UR.STATUS=2 THEN 'Complate' WHEN UR.STATUS=3 THEN 'Reject' END) STATUS  ");
+		sqlBuilder.append("	,(CASE WHEN UR_STEP.UR_STEP = 1 THEN 'Waiting for User' WHEN UR_STEP.UR_STEP = 2 THEN 'Waiting for Manager' WHEN UR_STEP.UR_STEP = 3 THEN 'Waiting for Role Iden'  ");
+		sqlBuilder.append("	WHEN UR_STEP.UR_STEP = 4 THEN 'Waiting for App owner' WHEN UR_STEP.UR_STEP = 5 THEN 'Waiting for Custodian' WHEN UR_STEP.UR_STEP = 6 THEN 'Waiting for Close ' END ");
+		sqlBuilder.append("	)UR_STEP ");
+		sqlBuilder.append("	,UR.APP_NAME ");
+		sqlBuilder.append("	,UR.APP_ROLE_NAME ");
+		sqlBuilder.append("	,UR_FOR_USER.UR_STEP REMARK");
+		sqlBuilder.append("	,(CASE WHEN APP.TYPE=1 THEN 'Application' WHEN APP.TYPE=2 THEN 'Telecom' ELSE  'Reject' END) TYPE ");
+		sqlBuilder.append("	,REQUEST_NO.SUBJECT ");
+		sqlBuilder.append("	,REQUEST_NO.DETAIL ");
+		sqlBuilder.append("	,(SELECT FLOW.FLOW_NAME FROM FLOW WHERE FLOW.FLOW_ID = UR.FLOW_ID  ) FLOW_NAME ");
+		sqlBuilder.append("	,UR_FOR_USER.* ");
+		sqlBuilder.append("	,(CASE WHEN (SELECT ORGANIZE.ORG_TYPE FROM ORGANIZE WHERE ORGANIZE.ORGCODE = UR_FOR_USER.ORGCODE)=1 THEN  'Back Office' ");
+		sqlBuilder.append("	WHEN (SELECT ORGANIZE.ORG_TYPE FROM ORGANIZE WHERE ORGANIZE.ORGCODE = UR_FOR_USER.ORGCODE)=2 THEN 'ACC' ");
+		sqlBuilder.append("	WHEN (SELECT ORGANIZE.ORG_TYPE FROM ORGANIZE WHERE ORGANIZE.ORGCODE = UR_FOR_USER.ORGCODE)=3 THEN 'Branch' ");
+		sqlBuilder.append("	WHEN (SELECT ORGANIZE.ORG_TYPE FROM ORGANIZE WHERE ORGANIZE.ORGCODE = UR_FOR_USER.ORGCODE)=4 THEN 'Outlet' ");
+		sqlBuilder.append("	END) ORG_TYPE ");
+		sqlBuilder.append("	,(CASE WHEN USER_APP_ROLE.PERIOD_TYPE IS NULL THEN '' WHEN USER_APP_ROLE.PERIOD_TYPE = 1 THEN 'Permanent' WHEN USER_APP_ROLE.PERIOD_TYPE = 2 THEN 'Temporary' END) PERIOD_TYPE ");
+		sqlBuilder.append("	,USER_APP_ROLE.START_TIME ");
+		sqlBuilder.append("	,USER_APP_ROLE.END_TIME ");
+		sqlBuilder.append("	,UR_APPROVE_HISTORY.APPROVE_TIME ");
+		sqlBuilder.append("	,UR_APPROVE_HISTORY.USERNAME CUSTODIAN_APPROVE ");
+		sqlBuilder.append("	,(CASE WHEN UR_FOR_USER.UR_STATUS=1 THEN 'Process' WHEN UR_FOR_USER.UR_STATUS=2 THEN 'Complete' WHEN UR_FOR_USER.UR_STATUS=3 THEN 'Reject' END) UR_STATUS_USER ");
+		sqlBuilder.append("	FROM REQUEST_NO ");
+		sqlBuilder.append(" INNER JOIN UR ON REQUEST_NO.REQUEST_NO = UR.REQUEST_NO ");
+		if(StringUtils.isNotEmpty(requestNo)&&StringUtils.isNotBlank(requestNo)){
+			sqlBuilder.append(" AND REQUEST_NO.REQUEST_NO LIKE $P{requestNo} ");
+			paramsUr.setRequestNo(CommonUtil.toSqlLikeFormat(paramsUr.getRequestNo()));
+		}
+		if(StringUtils.isNotEmpty(urFlow)&&StringUtils.isNotBlank(urFlow)){
+			sqlBuilder.append(" 	AND UR.FLOW_ID= $P{urFlow} ");
+		}
+		if(StringUtils.isNotEmpty(urNo)&&StringUtils.isNotBlank(urNo)){
+			sqlBuilder.append(" 	AND UR.UR_ID LIKE $P{urNo} ");
+			paramsUr.setUrNo(CommonUtil.toSqlLikeFormat(paramsUr.getUrNo()));
+		}
+		if(StringUtils.isNotEmpty(appName)&&StringUtils.isNotBlank(appName)){
+			sqlBuilder.append(" 	AND UR.APP_NAME LIKE $P{appName} ");
+			paramsUr.setAppName(CommonUtil.toSqlLikeFormat(paramsUr.getAppName()));
+		}
+		if(StringUtils.isNotEmpty(requestType)&&StringUtils.isNotBlank(requestType)){
+			sqlBuilder.append(" 	AND UR.REQUEST_TYPE = $P{requestType} ");
+		}
+		if(StringUtils.isNotEmpty(urStatus)&&StringUtils.isNotBlank(urStatus)){
+			sqlBuilder.append(" 	 AND UR.STATUS = $P{urStatus} ");
+		}
+		if(StringUtils.isNotEmpty(requestUrBy)&&StringUtils.isNotBlank(requestUrBy)){
+			sqlBuilder.append(" 	AND REQUEST_NO.USERNAME LIKE $P{requestUrBy} ");
+			paramsUr.setRequestUrBy(CommonUtil.toSqlLikeFormat(requestUrBy));
+		}
+		if(startDate!=null&&endDate!=null){
+			sqlBuilder.append(" 	AND CAST(REQUEST_NO.REQUEST_DATE AS DATE) >= $P{startDate}  AND CAST(REQUEST_NO.REQUEST_DATE AS DATE) < $P{endDate} ");
+		}
+		sqlBuilder.append(" INNER JOIN APP ON UR.APP_ID=APP.APP_ID ");
+		if(StringUtils.isNotEmpty(type)&&StringUtils.isNotBlank(type)){
+			sqlBuilder.append(" 		AND APP.TYPE = $P{type} ");
+		}
+		if(StringUtils.isNotEmpty(appName)&&StringUtils.isNotBlank(appName)){
+			sqlBuilder.append(" 	AND APP.APP_NAME LIKE $P{appName} ");
+		}
+		sqlBuilder.append(" INNER JOIN UR_STEP ON UR_STEP.UR_ID = UR.UR_ID AND UR_STEP.STATUS=1 ");
+		if(StringUtils.isNotEmpty(urNode)&&StringUtils.isNotBlank(urNode)){
+			sqlBuilder.append(" 	AND UR_STEP.UR_STEP= $P{urNode}  ");
+		}
+		sqlBuilder.append(" INNER JOIN UR_FOR_USER ON UR_FOR_USER.UR_ID = UR.UR_ID ");
+		if(StringUtils.isNotEmpty(userList)&&StringUtils.isNotBlank(userList)){
+			sqlBuilder.append(" 	AND UR_FOR_USER.USERNAME LIKE $P{userList} ");
+			paramsUr.setUserList(CommonUtil.toSqlLikeFormat(userList));
+		}
+		sqlBuilder.append(" INNER JOIN ORGANIZE ON UR_FOR_USER.ORGCODE = ORGANIZE.ORGCODE  ");
+		if(StringUtils.isNotEmpty(userType)&&StringUtils.isNotBlank(userType)){
+			sqlBuilder.append(" 	AND ORGANIZE.ORG_TYPE= $P{userType} ");
+		}
+		sqlBuilder.append("	LEFT JOIN USER_APP_ROLE ON USER_APP_ROLE.UR_ID=UR.UR_ID AND USER_APP_ROLE.USER_ID = (SELECT USER_ID FROM [USER] WHERE [USER].PINCODE=UR_FOR_USER.PINCODE) ");
+		if(startDateUFU!=null&&endDateUFU!=null){
+			sqlBuilder.append(" 	AND CAST(USER_APP_ROLE.START_TIME AS DATE) >= CAST($P{startDateUFU} AS DATE)  ");
+			sqlBuilder.append(" 	AND USER_APP_ROLE.END_TIME < $P{endDateUFU}  ");
+		}
+		sqlBuilder.append("	LEFT JOIN UR_APPROVE_HISTORY ON UR_APPROVE_HISTORY.UR_STEP_ID = UR_STEP.UR_STEP_ID AND UR_APPROVE_HISTORY.UR_ID = UR.UR_ID ");
+		if(StringUtils.isNotEmpty(authorUser)&&StringUtils.isNotBlank(authorUser)){
+			if("1".equals(authorUser)){
+				sqlBuilder.append("WHERE USER_APP_ROLE.USER_ID IS NOT NULL  ");
+			}else if("2".equals(authorUser)){
+				sqlBuilder.append("WHERE USER_APP_ROLE.USER_ID IS NULL  ");
+			}
+		}
+		sqlBuilder.append("	ORDER BY REQUEST_NO.CREATED_DATE ASC, REQUEST_NO.REQUEST_NO ASC ");
+		
+		return sqlBuilder.toString();
+	}
+	public static String exportExcelEligibleDefault(EligibleReportParams paramsUr) {
+		StringBuilder sqlBuilder = new StringBuilder();
+		sqlBuilder.append("	SELECT ROW_NUMBER() OVER(ORDER BY ORG.ORGCODE ASC,APP.APP_NAME ASC,ROLE.APP_ROLE_NAME ASC) ROWNUM ");
+		sqlBuilder.append("	,ELI.ELIGIBLE_ID,ORG.ORGCODE,ORG.ORGNAME,ORG.ORGDESC,APP.APP_ID,APP.APP_NAME ");
+		sqlBuilder.append("	,ROLE.APP_ROLE_ID,ROLE.APP_ROLE_NAME ");
+		sqlBuilder.append("	FROM [ELIGIBLE] ELI ");
+		sqlBuilder.append("INNER JOIN [ORGANIZE] ORG ON ELI.ORGCODE = ORG.ORGCODE  ");
+		if(StringUtils.isNotEmpty(paramsUr.getOrgCode())&&StringUtils.isNotBlank(paramsUr.getOrgCode())){
+			sqlBuilder.append(" AND ORG.ORGCODE LIKE $P{orgCode} ");
+			paramsUr.setOrgCode(CommonUtil.toSqlLikeFormat(paramsUr.getOrgCode()));
+		}
+		if(StringUtils.isNotEmpty(paramsUr.getOrgDesc())&&StringUtils.isNotBlank(paramsUr.getOrgDesc())){
+			sqlBuilder.append(" AND ORG.ORGDESC LIKE $P{orgDesc} ");
+			paramsUr.setOrgDesc(CommonUtil.toSqlLikeFormat(paramsUr.getOrgDesc()));
+		}
+		sqlBuilder.append("INNER JOIN [APP_ROLE] ROLE ON ELI.APP_ROLE_ID = ROLE.APP_ROLE_ID ");
+		sqlBuilder.append("INNER JOIN [APP] APP ON APP.APP_ID = ROLE.APP_ID ");
+		if(StringUtils.isNotEmpty(paramsUr.getAppName())&&StringUtils.isNotBlank(paramsUr.getAppName())){
+			sqlBuilder.append(" AND APP.APP_NAME LIKE $P{appName} ");
+			paramsUr.setAppName(CommonUtil.toSqlLikeFormat(paramsUr.getAppName()));
+		}
+		if(StringUtils.isNotEmpty(paramsUr.getType())&&StringUtils.isNotBlank(paramsUr.getType())){
+			sqlBuilder.append(" AND APP.TYPE = $P{type} ");
+		}
+		return sqlBuilder.toString();
+	}
+	
+	
+}

@@ -1,0 +1,84 @@
+package th.co.ais.mimo.acim.api.rest.model;
+
+import java.util.Date;
+
+import th.co.ais.mimo.acim.api.model.BaseEntity;
+
+public class Batch extends BaseEntity {
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2845377798985503127L;
+	private String batchId;
+	private String batchName;
+	private String status;
+	private String message;
+	private Date runTime;
+	
+	public Batch() {
+		
+	}
+
+	public String getBatchId() {
+		return batchId;
+	}
+
+	public void setBatchId(String batchId) {
+		this.batchId = batchId;
+	}
+
+	public String getBatchName() {
+		return batchName;
+	}
+
+	public void setBatchName(String batchName) {
+		this.batchName = batchName;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public Date getRunTime() {
+		return runTime;
+	}
+
+	public void setRunTime(Date runTime) {
+		this.runTime = runTime;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Batch [batchId=");
+		builder.append(batchId);
+		builder.append(", batchName=");
+		builder.append(batchName);
+		builder.append(", status=");
+		builder.append(status);
+		builder.append(", message=");
+		builder.append(message);
+		builder.append(", runTime=");
+		builder.append(runTime);
+		builder.append("]");
+		return builder.toString();
+	}
+	
+
+	
+	
+
+}

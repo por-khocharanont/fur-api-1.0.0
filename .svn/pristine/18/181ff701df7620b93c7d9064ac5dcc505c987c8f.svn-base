@@ -1,0 +1,13 @@
+package th.co.ais.mimo.acim.api.service;
+
+
+import th.co.ais.mimo.acim.api.rest.model.Batch;
+import th.co.ais.mimo.acim.api.service.exception.ServiceException;
+
+public interface BatchAutoCloseService {
+
+	
+	
+	Batch autoCloseUr() throws ServiceException;
+	
+}

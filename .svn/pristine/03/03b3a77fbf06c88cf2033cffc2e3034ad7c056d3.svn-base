@@ -1,0 +1,86 @@
+package th.co.ais.mimo.acim.api.repository;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Result;
+import org.apache.ibatis.annotations.Results;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.SelectProvider;
+import org.apache.ibatis.mapping.StatementType;
+
+import th.co.ais.mimo.acim.api.model.User;
+import th.co.ais.mimo.acim.api.model.UserToken;
+import th.co.ais.mimo.acim.api.repository.model.AppRoleApplication;
+import th.co.ais.mimo.acim.api.util.UserSqlProvider;
+
+public interface UserRepository {
+
+	static final String SELETE_USER_PROFILE_BY_USERNAME = "SELECT * from [USER] WHERE UPPER(USERNAME) =UPPER(#{username}) ";
+	
+	static final String SELETE_USER_PROFILE_BY_USER_ID = "SELECT * from [USER] WHERE UPPER(USER_ID) =UPPER(#{userId}) ";
+	
+	static final String SELECT_USER_PROFILE_BY_PIN = "SELECT * from [USER] WHERE UPPER(PINCODE) = UPPER(#{pincode})";
+//	static final String CHECK_STATUS_APPLICATION = "SELECT COUNT(*) FROM USER_APP_ROLE UAR "
+//			+ "WHERE APP_ROLE_ID IN ( SELECT APP_ROLE_ID FROM ELIGIBLE ELI WHERE APP_ROLE_ID IN ("
+//			+ "SELECT APP_ROLE_ID FROM APP_ROLE WHERE APP_ROLE_NAME = #{appRoleName})) "
+//			+ "AND USER_ID IN ( SELECT USER_ID FROM [USER] WHERE USERNAME = #{username} )";
+	
+	static final String CHECK_STATUS_APPLICATION = "SELECT COUNT(*) FROM USER_APP_ROLE UAR "
+			+ "WHERE APP_ROLE_ID IN ( SELECT APP_ROLE_ID FROM APP_ROLE APPROLE WHERE APPROLE.APP_ROLE_NAME = #{appRoleName} "
+			+ "AND APPROLE.APP_ID IN (SELECT APP_ID FROM APP WHERE APP_NAME = #{appName})) "
+			+ "AND USER_ID IN ( SELECT USER_ID FROM [USER] WHERE USERNAME = #{username} )";
+	
+	static final String SELECT_USER_PROFILE_LIST_BY_USERNAME_AND_FULLNAME ="SELECT * FROM [USER] WHERE USERNAME LIKE #{username} OR ENFULLNAME LIKE #{username}";
+	
+	static final String SELECT_COUNT_TOKEN_BY_USERNAME = "SELECT COUNT(*) FROM USER_TOKEN WHERE USER_ID IN ( SELECT USER_ID FROM [USER] WHERE USERNAME = #{username} )";
+	
+	static final String SELECT_USER_TOKEN_BY_USERNAME = "SELECT * FROM USER_TOKEN WHERE USER_ID IN ( SELECT USER_ID FROM [USER] WHERE USERNAME = #{username} )";
+	
+	@Select(SELETE_USER_PROFILE_BY_USERNAME)
+	@Options(statementType = StatementType.CALLABLE, useCache = true)
+	public User getUserProfileByUsername(@Param("username") String username) throws RuntimeException;
+
+	@Select(SELETE_USER_PROFILE_BY_USER_ID)
+	@Options(statementType = StatementType.CALLABLE, useCache = true)
+	public User getUserProfileByUserId(@Param("userId") String userId) throws RuntimeException;
+
+	@Select(SELECT_USER_PROFILE_BY_PIN)
+	@Options(statementType = StatementType.CALLABLE, useCache = true)
+	public User getUserProfileByPin(@Param("pincode") String pincode) throws RuntimeException;
+
+	
+	@Select(SELECT_USER_PROFILE_LIST_BY_USERNAME_AND_FULLNAME)
+	@Options(statementType = StatementType.CALLABLE, useCache = true)
+	public List<User> getUserProfileList(@Param("username") String username) throws RuntimeException;
+	
+	@SelectProvider(type = UserSqlProvider.class, method = "selectCountStandardApplication")
+	@Options(statementType = StatementType.CALLABLE, useCache = true)
+	public Integer getCountStandardApplicationTotalRecord(@Param("appName") String appName,@Param("username") String username,@Param("authorizationType") String authorizationType,@Param("applicationType") String applicationType) throws RuntimeException;
+
+	@SelectProvider(type = UserSqlProvider.class, method = "selectCountSpecialApplication")
+	@Options(statementType = StatementType.CALLABLE, useCache = true)
+	public Integer getCountSpecialApplicationTotalRecord(@Param("appName") String appName,@Param("username") String username,@Param("authorizationType") String authorizationType,@Param("applicationType") String applicationType) throws RuntimeException;
+
+	@Select(CHECK_STATUS_APPLICATION)
+	public Integer checkStatusApplication(@Param("appName") String appName, @Param("appRoleName") String appRoleName,@Param("username") String username) throws RuntimeException;
+	
+	@SelectProvider(type = UserSqlProvider.class, method = "selectStandardApplication")
+	@Options(statementType = StatementType.CALLABLE, useCache = true)
+	public List<AppRoleApplication> getStandardApplication(@Param("appName") String appName,@Param("username") String username,@Param("startRow") int startRow,@Param("endRow") int endRow,@Param("authorizationType") String authorizationType,@Param("applicationType") String applicationType,@Param("sidx") String sidx,@Param("sord") String sord) throws RuntimeException; 
+
+	@SelectProvider(type = UserSqlProvider.class, method = "selectSpecialApplication")
+	@Options(statementType = StatementType.CALLABLE, useCache = true)
+	public List<AppRoleApplication> getSpecialApplication(@Param("appName") String appName,@Param("username") String username,@Param("startRow") int startRow,@Param("endRow") int endRow,@Param("authorizationType") String authorizationType,@Param("applicationType") String applicationType,@Param("sidx") String sidx,@Param("sord") String sord) throws RuntimeException; 
+
+	@Select(SELECT_COUNT_TOKEN_BY_USERNAME)
+	@Options(statementType = StatementType.CALLABLE, useCache = true)
+	public Integer getCountTokenApplicationTotalRecord(@Param("username") String username) throws RuntimeException;
+
+	@Select(SELECT_USER_TOKEN_BY_USERNAME)
+	@Options(statementType = StatementType.CALLABLE, useCache = true)
+	public List<UserToken> getTokenApplication(@Param("username") String username) throws RuntimeException; 
+
+
+}

@@ -1,0 +1,11 @@
+package th.co.ais.mimo.acim.api.service;
+
+import th.co.ais.mimo.acim.api.rest.model.Batch;
+import th.co.ais.mimo.acim.api.service.exception.ServiceException;
+
+public interface BatchOrgUpdateService {
+	
+	Batch updateOrg() throws ServiceException;
+	
+
+}

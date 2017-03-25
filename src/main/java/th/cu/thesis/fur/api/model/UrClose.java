@@ -1,0 +1,165 @@
+package th.cu.thesis.fur.api.model;
+
+public class UrClose {
+	
+	public  UrClose() {
+		
+	}
+	
+	private String urStepId;
+	private String urId;
+//	private String requestNo;
+//	private String flowId;
+//	private String appId;
+//	private String appName;
+//	private String appRoleId;
+//	private String appRoleName;
+//	private String requestType;
+//	private String periodType;
+//	private Date endTime;
+//	private Date startTime;
+//	private String rolePastId;
+//	private String rolePast;
+//	private String status;
+//	private String remark;
+//	private String urFile;
+//	private Date createdDate;
+//	private String createdBy;
+//	private Date updateDate;
+//	private String updateBy;
+	
+	public String getUrStepId() {
+		return urStepId;
+	}
+	public void setUrStepId(String urStepId) {
+		this.urStepId = urStepId;
+	}
+	
+	public String getUrId() {
+		return urId;
+	}
+	public void setUrId(String urId) {
+		this.urId = urId;
+	}
+//	public String getRequestNo() {
+//		return requestNo;
+//	}
+//	public void setRequestNo(String requestNo) {
+//		this.requestNo = requestNo;
+//	}
+//	public String getFlowId() {
+//		return flowId;
+//	}
+//	public void setFlowId(String flowId) {
+//		this.flowId = flowId;
+//	}
+//	public String getAppId() {
+//		return appId;
+//	}
+//	public void setAppId(String appId) {
+//		this.appId = appId;
+//	}
+//	public String getAppName() {
+//		return appName;
+//	}
+//	public void setAppName(String appName) {
+//		this.appName = appName;
+//	}
+//	public String getAppRoleId() {
+//		return appRoleId;
+//	}
+//	public void setAppRoleId(String appRoleId) {
+//		this.appRoleId = appRoleId;
+//	}
+//	public String getAppRoleName() {
+//		return appRoleName;
+//	}
+//	public void setAppRoleName(String appRoleName) {
+//		this.appRoleName = appRoleName;
+//	}
+//	public String getRequestType() {
+//		return requestType;
+//	}
+//	public void setRequestType(String requestType) {
+//		this.requestType = requestType;
+//	}
+//	public String getPeriodType() {
+//		return periodType;
+//	}
+//	public void setPeriodType(String periodType) {
+//		this.periodType = periodType;
+//	}
+//	public Date getEndTime() {
+//		return endTime;
+//	}
+//	@JsonSerialize(using = DateJsonSerializer.class)
+//	public void setEndTime(Date endTime) {
+//		this.endTime = endTime;
+//	}
+//	public Date getStartTime() {
+//		return startTime;
+//	}
+//	@JsonSerialize(using = DateJsonSerializer.class)
+//	public void setStartTime(Date startTime) {
+//		this.startTime = startTime;
+//	}
+//	public String getRolePastId() {
+//		return rolePastId;
+//	}
+//	public void setRolePastId(String rolePastId) {
+//		this.rolePastId = rolePastId;
+//	}
+//	public String getRolePast() {
+//		return rolePast;
+//	}
+//	public void setRolePast(String rolePast) {
+//		this.rolePast = rolePast;
+//	}
+//	public String getStatus() {
+//		return status;
+//	}
+//	public void setStatus(String status) {
+//		this.status = status;
+//	}
+//	public String getRemark() {
+//		return remark;
+//	}
+//	public void setRemark(String remark) {
+//		this.remark = remark;
+//	}
+//	public String getUrFile() {
+//		return urFile;
+//	}
+//	public void setUrFile(String urFile) {
+//		this.urFile = urFile;
+//	}
+//	public Date getCreatedDate() {
+//		return createdDate;
+//	}
+//	@JsonSerialize(using = DateJsonSerializer.class)
+//	public void setCreatedDate(Date createdDate) {
+//		this.createdDate = createdDate;
+//	}
+//	public String getCreatedBy() {
+//		return createdBy;
+//	}
+//	
+//	public void setCreatedBy(String createdBy) {
+//		this.createdBy = createdBy;
+//	}
+//	public Date getUpdateDate() {
+//		return updateDate;
+//	}
+//	@JsonSerialize(using = DateJsonSerializer.class)
+//	public void setUpdateDate(Date updateDate) {
+//		this.updateDate = updateDate;
+//	}
+//	public String getUpdateBy() {
+//		return updateBy;
+//	}
+//	public void setUpdateBy(String updateBy) {
+//		this.updateBy = updateBy;
+//	}
+	
+
+}

@@ -1,0 +1,67 @@
+package th.co.ais.mimo.acim.api.rest.model;
+
+public class UserApplicationInfoGridRequest extends CommonGrid {
+	private String username;
+	private String appName;
+	private String authorizationType;
+	private String applicationType;
+
+	public UserApplicationInfoGridRequest() {
+	}
+
+	public UserApplicationInfoGridRequest(String username, String appName, String authorizationType,
+			String applicationType) {
+		this.username = username;
+		this.appName = appName;
+		this.authorizationType = authorizationType;
+		this.applicationType = applicationType;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getAppName() {
+		return appName;
+	}
+
+	public void setAppName(String appName) {
+		this.appName = appName;
+	}
+
+	public String getAuthorizationType() {
+		return authorizationType;
+	}
+
+	public void setAuthorizationType(String authorizationType) {
+		this.authorizationType = authorizationType;
+	}
+
+	public String getApplicationType() {
+		return applicationType;
+	}
+
+	public void setApplicationType(String applicationType) {
+		this.applicationType = applicationType;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("UserApplicationInfoGridRequest [username=");
+		builder.append(username);
+		builder.append(", appName=");
+		builder.append(appName);
+		builder.append(", authorizationType=");
+		builder.append(authorizationType);
+		builder.append(", applicationType=");
+		builder.append(applicationType);
+		builder.append("]");
+		return builder.toString();
+	}
+
+}

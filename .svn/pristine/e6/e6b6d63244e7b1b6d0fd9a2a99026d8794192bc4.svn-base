@@ -1,0 +1,77 @@
+package th.co.ais.mimo.acim.api.repository;
+
+import java.util.Date;
+import java.util.List;
+
+import org.apache.ibatis.annotations.InsertProvider;
+import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.SelectProvider;
+import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.UpdateProvider;
+import org.apache.ibatis.mapping.StatementType;
+
+import th.co.ais.mimo.acim.api.model.OrgFromAcim;
+import th.co.ais.mimo.acim.api.model.User;
+import th.co.ais.mimo.acim.api.rest.model.Batch;
+import th.co.ais.mimo.acim.api.util.BatchUserReOrgProvider;
+
+public interface BatchUserReOrgRepository {
+	
+	
+	static final String SQL_SELECT_ORGANIZE_ORGCODE = "SELECT * FROM ORGANIZE Where ORGCODE = #{orgcode}";
+	
+	static final String SQL_UPDATE_ORGCODE = "UPDATE [USER] SET "
+			+ "ORGCODE = #{orgcode} "
+			+ ",ORGNAME = #{orgname} "
+			+ ",ORGDESC = #{orgdesc} "
+			+ ",ORGLEVEL = #{orglevel} "
+			+ ",UPDATED_DATE = GETDATE() "
+			+ ",UPDATED_BY = 'SYSTEM-ADMIN' "
+			+ "WHERE PINCODE = #{pin} and ORGCODE = #{oldcode}";
+	
+	@Select(SQL_SELECT_ORGANIZE_ORGCODE)
+	public OrgFromAcim selectOrg(@Param("orgcode") String orgcode);
+	
+	@Update(SQL_UPDATE_ORGCODE)
+	public Integer UpdateOrgcode(@Param("pin") String pin, @Param("oldcode") String oldCode, @Param("orgcode") String orgCode, @Param("orgname") String orgName, 
+			@Param("orgdesc") String orgDesc, @Param("orglevel") String orgLevel) ;
+	
+	@SelectProvider(type=BatchUserReOrgProvider.class,method ="listTypeApplicationWhenChangeOraganize") 
+	@Options(statementType = StatementType.CALLABLE, useCache = true)
+	public List<String> listTypeApplicationWhenChangeOraganize ( @Param("newOrgCode") String newOrgCode, @Param("userName") String userName, @Param("date") Date date);
+	
+	@SelectProvider(type=BatchUserReOrgProvider.class,method ="DifferentListApplicationWhenChangeOraganize") 
+	@Options(statementType = StatementType.CALLABLE, useCache = true)
+	public List<String> DifferentListApplicationWhenChangeOraganize (@Param("newOrgCode") String newOrgCode, @Param("userName") String userName, @Param("type") String type ,@Param("date") Date date);
+
+	@UpdateProvider(type=BatchUserReOrgProvider.class,method ="clearUrStatusOnProcessByUser") 
+	@Options(statementType = StatementType.CALLABLE, useCache = true)
+	public void clearUrStatusOnProcessByUser (@Param("user") User user);
+
+	@UpdateProvider(type=BatchUserReOrgProvider.class,method ="clearUrForUserStatusOnProcessByUser") 
+	@Options(statementType = StatementType.CALLABLE, useCache = true)
+	public void clearUrForUserStatusOnProcessByUser (@Param("user") User user);
+	
+	@UpdateProvider(type=BatchUserReOrgProvider.class,method ="closeSetRejectURGroup") 
+	@Options(statementType = StatementType.CALLABLE, useCache = true)
+	public void closeSetRejectURGroup(@Param("user") User user);
+	
+	@SelectProvider(type=BatchUserReOrgProvider.class,method ="allApplicationByUser") 
+	@Options(statementType = StatementType.CALLABLE, useCache = true)
+	public List<String> allApplicationByUser(@Param("user") User user,@Param("type")String type, @Param("date") Date date);
+	
+	@SelectProvider(type=BatchUserReOrgProvider.class,method ="listTypeApplicationWhenChangeOrgtype") 
+	@Options(statementType = StatementType.CALLABLE, useCache = true)
+	public List<String> listTypeApplicationWhenChangeOrgtype(@Param("userName")String userName,@Param("date") Date date);
+
+	@InsertProvider(type=BatchUserReOrgProvider.class,method ="insertBatch") 
+	@Options(statementType = StatementType.CALLABLE, useCache = true)
+	public void insertBatch(@Param("batch")Batch batch);
+	
+//	@SelectProvider(type=BatchUserReOrgProvider.class,method ="ListApplicationWhenChangeOrgtype") 
+//	@Options(statementType = StatementType.CALLABLE, useCache = true)
+//	public List<String> ListApplicationWhenChangeOrgtype(@Param("userName")String userName,@Param("date") Date date);
+	
+}

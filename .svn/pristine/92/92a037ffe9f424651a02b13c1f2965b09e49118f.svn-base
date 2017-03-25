@@ -1,0 +1,10 @@
+package th.co.ais.mimo.acim.api.service;
+
+import th.co.ais.mimo.acim.api.rest.model.TodoListInfoGridRequest;
+import th.co.ais.mimo.acim.api.rest.model.TodoListInfoGridResponse;
+import th.co.ais.mimo.acim.api.service.exception.ServiceException;
+
+public interface TodoListService {
+	public TodoListInfoGridResponse getTodoList(TodoListInfoGridRequest request) throws ServiceException;
+	
+}

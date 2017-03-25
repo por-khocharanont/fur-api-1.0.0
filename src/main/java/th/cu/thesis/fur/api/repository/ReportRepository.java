@@ -1,0 +1,86 @@
+package th.cu.thesis.fur.api.repository;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Result;
+import org.apache.ibatis.annotations.Results;
+import org.apache.ibatis.annotations.SelectProvider;
+import org.apache.ibatis.mapping.StatementType;
+
+import th.cu.thesis.fur.api.util.ReportSqlProvider;
+
+public interface ReportRepository {
+	
+	///Search Report Application
+	@SelectProvider(type = ReportSqlProvider.class, method = "countSearchReportApplication")
+	@Options(statementType = StatementType.CALLABLE,  useCache = true)
+	public Integer countSearchReportApplication(@Param("appName")String appName,@Param("authenType") String authenType,@Param("type") String type,@Param("status") String status,@Param("periodType") String periodType,@Param("username") String username,@Param("startDate") Date startDate,@Param("endDate") Date endDate) throws RuntimeException;
+	
+	@SelectProvider(type = ReportSqlProvider.class, method = "searchReportApplication")
+	@Options(statementType = StatementType.CALLABLE,  useCache = true)
+	@Results({ @Result(property = "appId", column = "APP_ID" ,javaType=String.class)
+		,@Result(property = "application", column = "APP_NAME" ,javaType=String.class)
+		,@Result(property = "appRoleId", column = "APP_ROLE_ID" ,javaType=String.class)
+		,@Result(property = "applicationRole", column = "APP_ROLE_NAME" ,javaType=String.class)
+		,@Result(property = "type", column = "TYPE" ,javaType=String.class)
+		,@Result(property = "status", column = "STATUS" ,javaType=String.class)
+		,@Result(property = "period", column = "PERIOD_TYPE" ,javaType=String.class)
+		,@Result(property = "username", column = "USERNAME" ,javaType=String.class)
+		,@Result(property = "starttime", column = "START_TIME" ,javaType=String.class)
+		,@Result(property = "endtime", column = "END_TIME" ,javaType=String.class)
+		,@Result(property = "urId", column = "UR_ID" ,javaType=String.class)
+	})
+	public List<Map<String,Object>> searchReportApplication(@Param("appName")String appName,@Param("authenType") String authenType,@Param("type") String type,@Param("status") String status,@Param("periodType") String periodType,@Param("username") String username,@Param("startDate") Date startDate,@Param("endDate") Date endDate,@Param("startRow") Integer startRow,@Param("endRow") Integer endRow) throws RuntimeException;
+	
+	///Search Report Ur
+	@SelectProvider(type = ReportSqlProvider.class, method = "countSearchReportUr")
+	@Options(statementType = StatementType.CALLABLE,  useCache = true)
+	public Integer countSearchReportUr(@Param("requestNo") String requestNo,@Param("urNo") String urNo,
+			@Param("requestType") String requestType,@Param("urStatus") String urStatus,@Param("urNode") String urNode,@Param("urFlow") String urFlow,
+			@Param("userList")String userList,@Param("appName") String appName,@Param("type") String type,@Param("requestUrBy") String requestUrBy,@Param("userType") String userType,
+			@Param("authorUser")String authorUser,@Param("startDate") Date startDate,@Param("endDate") Date endDate,@Param("startDateUFU") Date startDateUFU,@Param("endDateUFU") Date endDateUFU
+			);
+	
+	@SelectProvider(type = ReportSqlProvider.class, method = "searchReportUr")
+	@Options(statementType = StatementType.CALLABLE,  useCache = true)
+	@Results({ @Result(property = "urrqNo", column = "REQUEST_NO" ,javaType=String.class)
+		,@Result(property = "urNo", column = "UR_ID" ,javaType=String.class)
+		,@Result(property = "requestDate", column = "REQUEST_DATE" ,javaType=Date.class)
+		,@Result(property = "requestBy", column = "REQUEST_BY" ,javaType=String.class)
+	})
+	public List<Map<String,Object>> searchReportUr(@Param("requestNo") String requestNo,@Param("urNo") String urNo,
+			@Param("requestType") String requestType,@Param("urStatus") String urStatus,@Param("urNode") String urNode,@Param("urFlow") String urFlow,
+			@Param("userList")String userList,@Param("appName") String appName,@Param("type") String type,@Param("requestUrBy") String requestUrBy,@Param("userType") String userType,
+			@Param("authorUser")String authorUser,@Param("startDate") Date startDate,@Param("endDate") Date endDate,@Param("startDateUFU") Date startDateUFU,@Param("endDateUFU") Date endDateUFU,@Param("startRow")Integer startRow,@Param("endRow")Integer endRow
+			);
+
+	// Search Eligible
+	@SelectProvider(type = ReportSqlProvider.class, method = "countSearchEligible")
+	@Options(statementType = StatementType.CALLABLE,  useCache = true)
+	public Integer countSearchEligible(@Param("orgCode")String orgCode,@Param("orgDesc") String orgDesc,@Param("type") String type,@Param("appName") String appName);
+	
+	@SelectProvider(type = ReportSqlProvider.class, method = "searchEligible")
+	@Options(statementType = StatementType.CALLABLE,  useCache = true)
+	@Results({ @Result(property = "eligibleId", column = "ELIGIBLE_ID" ,javaType=String.class)
+		,@Result(property = "orgCode", column = "ORGCODE" ,javaType=String.class)
+		,@Result(property = "orgName", column = "ORGNAME" ,javaType=String.class)
+		,@Result(property = "orgDesc", column = "ORGDESC" ,javaType=String.class)
+		,@Result(property = "appId", column = "APP_ID" ,javaType=String.class)
+		,@Result(property = "appName", column = "APP_NAME" ,javaType=String.class)
+		,@Result(property = "appRoleId", column = "APP_ROLE_ID" ,javaType=String.class)
+		,@Result(property = "appRoleName", column = "APP_ROLE_NAME" ,javaType=String.class)
+	})
+	public List<Map<String, Object>> searchEligible(@Param("orgCode")String orgCode,@Param("orgDesc") String orgDesc,@Param("type") String type,@Param("appName") String appName, @Param("startRow")Integer startRow,@Param("endRow")Integer endRow);
+
+	@SelectProvider(type = ReportSqlProvider.class, method = "getFlows")
+	@Options(statementType = StatementType.CALLABLE,  useCache = true)
+	@Results({ @Result(property = "flowId", column = "FLOW_ID" ,javaType=String.class)
+		,@Result(property = "flowName", column = "FLOW_NAME" ,javaType=String.class)
+	})
+	public List<Map<String, String>> getFlows();
+
+}

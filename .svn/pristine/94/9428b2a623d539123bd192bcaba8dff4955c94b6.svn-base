@@ -1,0 +1,203 @@
+package th.co.ais.mimo.acim.api.service.impl;
+
+import java.util.Date;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import th.co.ais.mimo.acim.api.filter.RestControllerLoggingFilter;
+import th.co.ais.mimo.acim.api.model.UrApproveHistory;
+import th.co.ais.mimo.acim.api.model.User;
+import th.co.ais.mimo.acim.api.repository.UserRepository;
+import th.co.ais.mimo.acim.api.repository.UserRequestRepository;
+import th.co.ais.mimo.acim.api.repository.WatchListRepository;
+import th.co.ais.mimo.acim.api.repository.model.WatchList;
+import th.co.ais.mimo.acim.api.rest.model.WatchListGridRequest;
+import th.co.ais.mimo.acim.api.rest.model.WatchListGridResponse;
+import th.co.ais.mimo.acim.api.service.CommonService;
+import th.co.ais.mimo.acim.api.service.WatchListService;
+import th.co.ais.mimo.acim.api.service.exception.ServiceException;
+import th.co.ais.mimo.acim.api.util.CommonUtil;
+import th.co.ais.mimo.acim.api.util.WatchListSqlProvider;
+
+@Service("watchlistService")
+public class WatchListServiceImpl implements WatchListService{
+
+	private static final Logger logger = LoggerFactory.getLogger(WatchListServiceImpl.class);
+	
+	private static final String CAN_APPROVE = "1";
+	private static final String COMPLETE = "Complete";
+	private static final String REJECT = "Reject";
+	
+	private static final String COMPLETE_STATUS = "2";
+	private static final String WAITING_FOR_CLOSE_STATUS = "6";
+	
+	@Autowired
+	private UserRequestRepository userRequestRepository;
+	
+	@Autowired
+	private WatchListRepository watchListRepository;
+	
+	@Autowired
+	private UserRepository userRepository;
+	
+	@Autowired
+	private CommonService commonService;
+	
+	
+	@Override
+	public WatchListGridResponse getWatchList(WatchListGridRequest request, String userLogin) throws ServiceException {
+		
+		WatchListGridResponse response = new WatchListGridResponse();
+		try {
+						
+			String userRequestNo = request.getUserRequestNo();
+			String urNo = request.getUrNo();
+			Date startDate = null;
+			Date endDate = null;
+			String urStep = request.getUrStep();
+			String urStatus = request.getUrStatus();
+			
+			urNo = CommonUtil.toSqlLikeFormat(urNo);
+			userRequestNo = CommonUtil.toSqlLikeFormat(userRequestNo);
+			
+			String orderBy = request.getSidx() + " " +  request.getSord();
+			
+			if(StringUtils.isNotEmpty(request.getStartDate())&&StringUtils.isNotBlank(request.getStartDate())){
+				 startDate = CommonUtil.textToDate(request.getStartDate());
+			}
+			if(StringUtils.isNotEmpty(request.getEndDate())&&StringUtils.isNotBlank(request.getEndDate())){
+				 endDate = CommonUtil.textToDate(request.getEndDate());
+				 endDate = CommonUtil.getDateForSearchAtEndDate(endDate);
+			}
+			
+			// set page, size
+			int page = request.getPage();
+			int size = request.getRows();
+			int startRow = ((page - 1) * size) + 1;
+			int endRow = 0;
+			
+			//count Total WatchList
+			logger.info(RestControllerLoggingFilter.DATABASE, "CountTotalWatchlist","userRequestNo="+userRequestNo+", urNo="+urNo+", startDate="+startDate+", endDate="+endDate+", urStep="+urStep+", urStatus="+urStatus+", userLogin="+userLogin);
+			int totalRecord = watchListRepository.countTotalWatchList(userRequestNo, urNo, startDate, endDate, urStep, urStatus, userLogin);
+			logger.info(RestControllerLoggingFilter.DATABASE, "CountTotalWatchlist","totalRecord="+totalRecord);
+			
+			if(totalRecord == size){
+				endRow = totalRecord;
+			}else {
+				endRow = (startRow + size) - 1;
+			}
+			
+			//find WatchList with startRow, endRow
+			logger.info(RestControllerLoggingFilter.DATABASE, "FindWatchlist","userRequestNo="+userRequestNo+", urNo="+urNo+", startDate="+startDate+", endDate="+endDate+", urStep="+urStep+", urStatus="+urStatus+", userLogin="+userLogin+", startRow="+startRow+", endRow="+endRow+", orderBy="+orderBy);
+			List<WatchList> watchLists = watchListRepository.findWatchList(userRequestNo, urNo, startDate, endDate, urStep, urStatus, userLogin, startRow, endRow, orderBy);
+			logger.info(RestControllerLoggingFilter.DATABASE, "FindWatchlist","watchLists Size="+watchLists.size());
+			
+			for(WatchList watchList : watchLists){
+				
+				String username = watchList.getUsername();
+				String stepUr = watchList.getUrStep();
+				
+				if(username.equalsIgnoreCase(userLogin)){
+					watchList.setUrApprove(CAN_APPROVE);
+				}
+				
+				if(urStatus.equals(WatchListSqlProvider.UR_STATUS_COMPLETE)){
+					watchList.setUrStepText(COMPLETE);
+				}
+				else if (urStatus.equals(WatchListSqlProvider.UR_STATUS_REJECT)){
+					watchList.setUrStepText(REJECT);
+				}else {
+					urStep = commonService.getMessage("ur.step."+stepUr);
+					watchList.setUrStepText(urStep);
+				}
+				
+				
+			}
+			
+			response.setRows(watchLists);
+			response.setRecords(totalRecord);
+			response.setPage(page);
+
+			int total = 0;
+			if (totalRecord % size == 0) {
+				total = totalRecord / size;
+			} else {
+				total = (totalRecord / size) + 1;
+			}
+			
+			response.setTotal(total);
+			
+		} catch  (RuntimeException e) {
+			throw ServiceException.get500DBError(e);
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
+	public void closeUr(List<String> urIdList, String userLogin) throws ServiceException {
+		
+		try {
+			
+			//Check user can close UR?
+			for(String urId : urIdList){
+				
+				logger.info(RestControllerLoggingFilter.DATABASE, "checkCloseUr","urId="+urId+", username="+userLogin);
+				List<String> urStepId = watchListRepository.checkCloseUr(urId, userLogin);
+				
+				if(urStepId.size() == 0){
+					 throw ServiceException.get400BadRequest("40001", "User can't close UR");
+				}
+				
+			}
+			
+			logger.info(RestControllerLoggingFilter.DATABASE, "getUserProfileByUsername","username="+userLogin);
+			User userProfile = userRepository.getUserProfileByUsername(userLogin);
+			
+			for(String urId : urIdList){
+				
+				String urStepId = watchListRepository.selectCloseUrStepByUrId(urId, WAITING_FOR_CLOSE_STATUS);
+				
+				//insert to UR_APPROVE_HISTORY
+				UrApproveHistory urHistory = new UrApproveHistory();
+				
+				urHistory.setUrApproveHistoryId(CommonUtil.generateUUID());
+				urHistory.setUrStepId(urStepId);
+				urHistory.setUrId(urId);
+				urHistory.setPincode(userProfile.getPincode());
+				urHistory.setEnname(userProfile.getEnname());
+				urHistory.setEnsurname(userProfile.getEnsurname());
+				urHistory.setUsername(userLogin);
+				urHistory.setEmail(userProfile.getEmail());
+				urHistory.setPhone(userProfile.getPhone());
+				urHistory.setMobile(userProfile.getMobile());
+				urHistory.setStatus(CAN_APPROVE);
+				urHistory.setCreatedBy(userLogin);
+				urHistory.setUpdatedBy(userLogin);
+				
+				logger.info(RestControllerLoggingFilter.DATABASE, "createUrApproveHistory",urHistory);
+				watchListRepository.createUrApproveHistory(urHistory);
+				
+				userRequestRepository.updateUrStepStatusByUrStepId(COMPLETE_STATUS, userLogin,urStepId);
+				
+				//Update STATUS to UR, UR_FOR_USER, 
+				logger.info(RestControllerLoggingFilter.DATABASE, "closeUrComplete","urId="+urId);
+				watchListRepository.closeUrComplete(urId, userLogin);
+			}
+			
+			
+			
+		}  catch  (RuntimeException e) {
+			throw ServiceException.get500DBError(e);
+		}
+		
+	}
+
+}

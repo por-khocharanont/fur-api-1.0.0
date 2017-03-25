@@ -1,0 +1,124 @@
+package th.cu.thesis.fur.api.repository.model;
+
+import java.util.Date;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import th.cu.thesis.fur.api.util.DateJsonSerializer;
+
+public class AppRoleApplication {
+
+	private String appName;
+	private String appRoleId;
+	private String appRoleName;
+	private String type;
+	private String authorization;
+	private String token;
+	private String urId;
+	private String periodType;
+	private Date startTime;
+	private Date endTime;
+
+	public String getAppRoleId() {
+		return appRoleId;
+	}
+
+	public void setAppRoleId(String appRoleId) {
+		this.appRoleId = appRoleId;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
+
+	public String getAppName() {
+
+		return appName;
+	}
+
+	public void setAppName(String appName) {
+		this.appName = appName;
+	}
+
+	public String getAppRoleName() {
+		return appRoleName;
+	}
+
+	public void setAppRoleName(String appRoleName) {
+		this.appRoleName = appRoleName;
+	}
+
+	public String getAuthorization() {
+		return authorization;
+	}
+
+	public void setAuthorization(String authorization) {
+		this.authorization = authorization;
+	}
+
+	public String getUrId() {
+		return urId;
+	}
+
+	public void setUrId(String urId) {
+		this.urId = urId;
+	}
+
+	public String getPeriodType() {
+		return periodType;
+	}
+
+	public void setPeriodType(String periodType) {
+		this.periodType = periodType;
+	}
+
+	public Date getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(Date startTime) {
+		this.startTime = startTime;
+	}
+
+	public Date getEndTime() {
+		return endTime;
+	}
+
+	public void setEndTime(Date endTime) {
+		this.endTime = endTime;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("AppRoleApplication [appName=");
+		builder.append(appName);
+		builder.append(", appRoleName=");
+		builder.append(appRoleName);
+		builder.append(", authorization=");
+		builder.append(authorization);
+		builder.append(", urId=");
+		builder.append(urId);
+		builder.append(", periodType=");
+		builder.append(periodType);
+		builder.append(", startTime=");
+		builder.append(startTime);
+		builder.append(", endTime=");
+		builder.append(endTime);
+		builder.append("]");
+		return builder.toString();
+	}
+
+}

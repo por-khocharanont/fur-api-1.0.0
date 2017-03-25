@@ -1,0 +1,97 @@
+package th.co.ais.mimo.acim.api.model;
+
+public class UrStep extends BaseEntity{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7276778011275980277L;
+
+	private String urStepId;
+	private String urId;
+	private String urStep;
+	private String approveType;
+	private String minimumApprove;
+	private String seQuence;
+	private String status;
+	
+	public UrStep(){
+		
+	}
+	
+	public UrStep(UrStep urStepObj) {
+		this.urStepId = urStepObj.getUrStepId();
+		this.urId = urStepObj.getUrId();
+		this.urStep = urStepObj.getUrStep();
+		this.approveType = urStepObj.getApproveType();
+		this.minimumApprove = urStepObj.getMinimumApprove();
+		this.seQuence = urStepObj.getSeQuence();
+		this.status = urStepObj.getStatus();
+		this.setCreatedDate(urStepObj.getCreatedDate());
+		this.setUpdatedDate(urStepObj.getUpdatedDate());
+	}
+	
+	public String getUrStepId() {
+		return urStepId;
+	}
+	public void setUrStepId(String urStepId) {
+		this.urStepId = urStepId;
+	}
+	public String getUrId() {
+		return urId;
+	}
+	public void setUrId(String urId) {
+		this.urId = urId;
+	}
+	public String getUrStep() {
+		return urStep;
+	}
+	public void setUrStep(String urStep) {
+		this.urStep = urStep;
+	}
+	public String getApproveType() {
+		return approveType;
+	}
+	public void setApproveType(String approveType) {
+		this.approveType = approveType;
+	}
+	public String getMinimumApprove() {
+		return minimumApprove;
+	}
+	public void setMinimumApprove(String minimumApprove) {
+		this.minimumApprove = minimumApprove;
+	}
+	public String getSeQuence() {
+		return seQuence;
+	}
+	public void setSeQuence(String seQuence) {
+		this.seQuence = seQuence;
+	}
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("UrStep [urStepId=");
+		builder.append(urStepId);
+		builder.append(", urId=");
+		builder.append(urId);
+		builder.append(", urStep=");
+		builder.append(urStep);
+		builder.append(", approveType=");
+		builder.append(approveType);
+		builder.append(", minimumApprove=");
+		builder.append(minimumApprove);
+		builder.append(", seQuence=");
+		builder.append(seQuence);
+		builder.append(", status=");
+		builder.append(status);
+		builder.append("]");
+		return builder.toString();
+	}
+	
+}

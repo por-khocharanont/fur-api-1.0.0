@@ -1,0 +1,17 @@
+package th.co.ais.mimo.acim.api.service;
+
+import java.util.Date;
+
+import th.co.ais.mimo.acim.api.model.User;
+import th.co.ais.mimo.acim.api.rest.model.Batch;
+import th.co.ais.mimo.acim.api.service.exception.ServiceException;
+
+public interface BatchUserResignedService {
+	
+	
+	public Batch updateUserResigned(String date) throws ServiceException;
+
+	public void terminateAllApplication(User user, Date date) throws ServiceException;
+	
+
+}

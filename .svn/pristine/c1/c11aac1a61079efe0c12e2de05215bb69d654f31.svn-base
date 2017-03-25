@@ -1,0 +1,19 @@
+package th.co.ais.mimo.acim.api.service;
+
+import java.util.List;
+
+import th.co.ais.mimo.acim.api.model.RolePermission;
+import th.co.ais.mimo.acim.api.model.UserMenu;
+import th.co.ais.mimo.acim.api.service.exception.ServiceException;
+
+public interface CommonService {
+	
+	public String getMessage(String code) throws ServiceException;
+	
+	public UserMenu getUserMenuByUserId(String userId) throws ServiceException;
+	
+	public UserMenu getUserMenuByUsername(String username) throws ServiceException;
+	
+	public List<RolePermission> getRoleByUserId(String userId) throws ServiceException;
+
+}

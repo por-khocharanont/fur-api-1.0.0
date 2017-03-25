@@ -1,0 +1,142 @@
+package th.co.ais.mimo.acim.api.util;
+
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+
+public class ApplicationSqlProvider {
+
+	private static final String ALL = "0";
+	private static final String APP_NAME = "appName";
+	private static final String STATUS = "status";
+
+	private static final String SORT_BY_STATUS = "RES.STATUS";
+	private static final String SORT_BY_APP_NAME = "RES.APP_NAME";
+
+	public String selectCountSearchApplication(Map<String, Object> params) {
+
+		String status = (String) params.get("status");
+		String applicationType = (String) params.get("applicationType");
+		String authenticationType = (String) params.get("authenticationType");
+
+		String SELECT_USER_ID_BY_APP_OWNER_NAME = "(SELECT [USER_ID] FROM [USER] WHERE USERNAME LIKE #{appOwnerName} )";
+		String SELECT_USER_ID_BY_CUSTODIAN_NAME = "(SELECT [USER_ID] FROM [USER] WHERE USERNAME LIKE #{custodianName} )";
+		
+		String sql = " (SELECT COUNT([APP_ID]) FROM [APP] "
+						+ "WHERE [APP_NAME] LIKE #{appName} "
+						+ "AND [APP_ID] IN (SELECT [APP_ID] FROM [APP_ROLE] WHERE [APP_ROLE_NAME] LIKE #{roleName}) ";
+				
+				//APP_OWNER
+				sql += "AND (APP_ID IN ( SELECT APP_ID FROM APP_OWNER WHERE USER_ID IN "
+						+ SELECT_USER_ID_BY_APP_OWNER_NAME + ") "
+						+ "OR "
+						+ "APP_ID IN ( "
+						+ "SELECT APP_ID FROM APP_OWNER_TEAM WHERE [APP_OWNER_TEAM_ID] IN ( "
+						+ "SELECT APP_OWNER_TEAM_ID FROM APP_OWNER_MEMBER WHERE USER_ID IN ("
+						+ SELECT_USER_ID_BY_APP_OWNER_NAME + ")))"
+						+ ")";
+					
+				//CUSTODIAN
+				sql += "AND (APP_ID IN ( SELECT APP_ID FROM acim.CUSTODIAN WHERE USER_ID IN "
+						+ SELECT_USER_ID_BY_CUSTODIAN_NAME
+						+ ") "
+						+ "OR "
+						+ "APP_ID IN ( "
+						+ "SELECT APP_ID FROM CUSTODIAN_TEAM WHERE [CUSTODIAN_TEAM_ID] IN ( "
+						+ "SELECT CUSTODIAN_TEAM_ID FROM CUSTODIAN_MEMBER WHERE USER_ID IN ("
+						+ SELECT_USER_ID_BY_CUSTODIAN_NAME +")))"
+						+ ")";
+
+		if (!ALL.equals(status)) {
+			sql += "AND [STATUS] = #{status} ";
+		}
+		if (!ALL.equals(applicationType)) {
+			sql += "AND TYPE = #{applicationType} ";
+		}
+		if (!ALL.equals(authenticationType)) {
+			sql += "AND [APP_ID] IN ( SELECT [APP_ID] FROM [APP_AUTHEN] WHERE [APP_ID] IN "
+					+ "( SELECT [APP_ID] FROM [APP] WHERE [APP_NAME] LIKE #{appName} ) "
+					+ "AND [AUTHEN_TYPE_NAME] = #{authenticationType})";
+		}
+		sql += ")";
+		return sql;
+	}
+	
+	public String selectSearchApplication(Map<String, Object> params) {
+
+		String status = (String) params.get("status");
+		String applicationType = (String) params.get("applicationType");
+		String authenticationType = (String) params.get("authenticationType");
+
+		String sord = (String) params.get("sord");
+		String sidx = (String) params.get("sidx");
+		String sordBy = "";
+		if (APP_NAME.equals(sidx)) {
+			sordBy = SORT_BY_APP_NAME;
+		} else if (STATUS.equals(sidx)) {
+			sordBy = SORT_BY_STATUS;
+		} else {
+			sordBy = SORT_BY_APP_NAME;
+		}
+		
+		String SELECT_USER_ID_BY_APP_OWNER_NAME = "(SELECT [USER_ID] FROM [USER] WHERE USERNAME LIKE #{appOwnerName} )";
+		String SELECT_USER_ID_BY_CUSTODIAN_NAME = "(SELECT [USER_ID] FROM [USER] WHERE USERNAME LIKE #{custodianName} )";
+		
+		String sql = "SELECT * FROM ( SELECT ROW_NUMBER() OVER(ORDER BY "+ sordBy + " " + sord +") AS ROWNUMBER , RES.* FROM "
+				+ " (SELECT [APP_ID],[APP_NAME],[APP_INFO],[STATUS],[TYPE] FROM [APP] "
+				+ "WHERE [APP_NAME] LIKE #{appName} "
+				+ "AND [APP_ID] IN (SELECT [APP_ID] FROM [APP_ROLE] WHERE [APP_ROLE_NAME] LIKE #{roleName}) ";
+		
+		//APP_OWNER
+		sql += "AND (APP_ID IN ( SELECT APP_ID FROM APP_OWNER WHERE USER_ID IN "
+				+ SELECT_USER_ID_BY_APP_OWNER_NAME + ") "
+				+ "OR "
+				+ "APP_ID IN ( "
+				+ "SELECT APP_ID FROM APP_OWNER_TEAM WHERE [APP_OWNER_TEAM_ID] IN ( "
+				+ "SELECT APP_OWNER_TEAM_ID FROM APP_OWNER_MEMBER WHERE USER_ID IN ("
+				+ SELECT_USER_ID_BY_APP_OWNER_NAME + ")))"
+				+ ")";
+			
+		//CUSTODIAN
+		sql += "AND (APP_ID IN ( SELECT APP_ID FROM acim.CUSTODIAN WHERE USER_ID IN "
+				+ SELECT_USER_ID_BY_CUSTODIAN_NAME
+				+ ") "
+				+ "OR "
+				+ "APP_ID IN ( "
+				+ "SELECT APP_ID FROM CUSTODIAN_TEAM WHERE [CUSTODIAN_TEAM_ID] IN ( "
+				+ "SELECT CUSTODIAN_TEAM_ID FROM CUSTODIAN_MEMBER WHERE USER_ID IN ("
+				+ SELECT_USER_ID_BY_CUSTODIAN_NAME +")))"
+				+ ")";
+		
+		if (!ALL.equals(status)) {
+			sql += "AND [STATUS] = #{status} ";
+		}
+		
+		if (!ALL.equals(applicationType)) {
+			sql += "AND TYPE = #{applicationType} ";
+		}
+		
+		if (!ALL.equals(authenticationType)) {
+			sql += "AND [APP_ID] IN ( SELECT [APP_ID] FROM [APP_AUTHEN] WHERE [APP_ID] IN "
+					+ "( SELECT [APP_ID] FROM [APP] WHERE [APP_NAME] LIKE #{appName} ) "
+					+ "AND [AUTHEN_TYPE_NAME] = #{authenticationType})";
+		}
+					
+		sql += ") RES ";
+		sql += ") RESULT WHERE RESULT.ROWNUMBER BETWEEN #{startRow} AND #{endRow}";
+
+		System.out.println(sql);
+		return sql;
+	}
+	
+	public String findByAppNameAndType (Map<String, Object> params){
+		StringBuilder stringBuilder = new StringBuilder(); 
+		stringBuilder.append("SELECT * FROM [APP] WHERE 1=1 ");
+		if(StringUtils.isNotBlank(params.get("appName").toString())){
+			stringBuilder.append("AND APP_NAME LIKE #{appName} ");
+		}
+		stringBuilder.append("AND STATUS = '1' AND TYPE = #{type} ");
+		return stringBuilder.toString();
+	}
+
+}

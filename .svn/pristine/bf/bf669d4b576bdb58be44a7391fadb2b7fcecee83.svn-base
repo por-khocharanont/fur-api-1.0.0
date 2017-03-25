@@ -1,0 +1,10 @@
+package th.co.ais.mimo.acim.api.service;
+
+import th.co.ais.mimo.acim.api.rest.model.Batch;
+import th.co.ais.mimo.acim.api.service.exception.ServiceException;
+
+public interface BatchUserChangeService {
+
+	Batch updateUserChange(String date) throws ServiceException;
+	
+}

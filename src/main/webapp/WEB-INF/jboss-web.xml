@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jboss-web>
+    <context-root>/fur-api</context-root>
+    <valve>
+        <class-name>org.apache.catalina.valves.RemoteIpValve</class-name>
+        <param>
+            <param-name>protocolHeader</param-name>
+            <param-value>x-forwarded-proto</param-value>
+        </param>
+    </valve>
+    <valve>
+        <class-name>org.apache.catalina.valves.AccessLogValve</class-name>
+        <param>
+            <param-name>prefix</param-name>
+            <param-value>http-access</param-value>
+        </param>
+        <param>
+            <param-name>suffix</param-name>
+            <param-value>.log</param-value>
+        </param>
+        <param>
+            <param-name>pattern</param-name>
+            <param-value>%h %l %u %t %r %s %b %{User-Agent}i %{JSESSIONID}c</param-value>
+        </param>
+        <param>
+            <param-name>directory</param-name>
+            <param-value>host</param-value>
+        </param>
+        <param>
+            <param-name>resolveHosts</param-name>
+            <param-value>false</param-value>
+        </param>
+    </valve>
+</jboss-web>

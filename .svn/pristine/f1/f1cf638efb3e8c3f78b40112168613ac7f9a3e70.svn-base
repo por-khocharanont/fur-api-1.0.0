@@ -1,0 +1,141 @@
+package th.co.ais.mimo.acim.api.service.impl;
+
+import java.util.List;
+import java.util.Set;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.stereotype.Service;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
+
+import th.co.ais.mimo.acim.api.model.EmailProperties;
+import th.co.ais.mimo.acim.api.service.EmailUtilService;
+import th.co.ais.mimo.acim.api.service.exception.ServiceException;
+
+@Service
+public class EmailUtilServiceImpl implements EmailUtilService {
+	
+	@Autowired
+	JavaMailSender  mailSender;
+	
+	@Autowired
+	TemplateEngine templateEngine;
+	
+	@Autowired
+	EmailProperties emailProperties;
+	
+	
+	@Override
+	public InternetAddress[] getRecipients(List<String> recipients) throws ServiceException {
+		InternetAddress sendTo[] = new InternetAddress[recipients.size()];
+		for (int i = 0; i < sendTo.length; i++) {
+			try {
+				sendTo[i] = new InternetAddress(recipients.get(i));
+			} catch (AddressException e) {
+				
+				e.printStackTrace();
+			}
+		}
+		
+		return sendTo;
+	}
+	@Override
+	public InternetAddress[] getRecipients(Set<String> recipients) throws ServiceException {
+		InternetAddress sendTo[] = new InternetAddress[recipients.size()];
+		int i=0;
+		for (String email : recipients) {
+			try {
+				sendTo[i++] = new InternetAddress(email);
+			} catch (AddressException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return sendTo;
+	}
+	@Override
+	public void send(String to, String subject, String templateEmail,Context data){
+		    final MimeMessage mimeMessage = mailSender.createMimeMessage();
+		    data.setVariable("domainAcim",emailProperties.getDomainAcim());
+		    MimeMessageHelper message;
+			try { 
+				// true = multipart
+				message = new MimeMessageHelper(mimeMessage, false, "UTF-8");
+			    message.setSubject(subject);
+			    message.setFrom(emailProperties.getEmailAddress());
+			    message.setTo(to);
+			    // Create the HTML body using Thymeleaf
+			    final String htmlContent = templateEngine.process(templateEmail, data);
+			    message.setText(htmlContent, true);
+			    // Send 
+			    mailSender.send(mimeMessage);
+		    
+			} catch (MessagingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	}
+
+	@Override
+	public void send(List<String> to, String subject, String templateEmail,Context data) {
+		final MimeMessage mimeMessage = mailSender.createMimeMessage();
+		data.setVariable("domainAcim",emailProperties.getDomainAcim());
+	    MimeMessageHelper message;
+		try { 
+			// true = multipart
+			message = new MimeMessageHelper(mimeMessage, false, "UTF-8");
+		    message.setSubject(subject);
+		    message.setFrom(emailProperties.getEmailAddress());
+		    message.setTo(getRecipients(to));
+		    // Create the HTML body using Thymeleaf
+		    final String htmlContent = templateEngine.process(templateEmail, data);
+		    message.setText(htmlContent, true);
+		    // Send 
+		    mailSender.send(mimeMessage);
+	    
+		} catch (MessagingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ServiceException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
+	@Override
+	public void send(Set<String> to, String subject, String templateEmail,Context data) {
+		final MimeMessage mimeMessage = mailSender.createMimeMessage();
+		data.setVariable("domainAcim",emailProperties.getDomainAcim());
+	    MimeMessageHelper message;
+		try { 
+			// true = multipart
+			message = new MimeMessageHelper(mimeMessage, false, "UTF-8");
+		    message.setSubject(subject);
+		    message.setFrom(emailProperties.getEmailAddress());
+		    message.setTo(getRecipients(to));
+		    // Create the HTML body using Thymeleaf
+		    final String htmlContent = templateEngine.process(templateEmail, data);
+		    message.setText(htmlContent, true);
+		    // Send 
+		    mailSender.send(mimeMessage);
+	    
+		} catch (MessagingException e) {
+			e.printStackTrace();
+		} catch (ServiceException e) {
+			e.printStackTrace();
+		}
+		
+	}
+
+	
+
+	
+}

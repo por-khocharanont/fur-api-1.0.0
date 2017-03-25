@@ -1,0 +1,94 @@
+package th.co.ais.mimo.acim.api.service;
+import java.util.List;
+import java.util.Map;
+
+import th.co.ais.mimo.acim.api.model.Application;
+import th.co.ais.mimo.acim.api.model.UrForUser;
+import th.co.ais.mimo.acim.api.model.UserCustodian;
+import th.co.ais.mimo.acim.api.repository.model.AppFile;
+import th.co.ais.mimo.acim.api.rest.model.BaseGridResponse;
+import th.co.ais.mimo.acim.api.rest.model.DataUserRequestValidate;
+import th.co.ais.mimo.acim.api.rest.model.RequestNoDetail;
+import th.co.ais.mimo.acim.api.rest.model.UserRequestApproveRequest;
+import th.co.ais.mimo.acim.api.rest.model.UserRequestDetail;
+import th.co.ais.mimo.acim.api.rest.model.UserRequestFromGrid;
+import th.co.ais.mimo.acim.api.rest.model.UserRequestListUser;
+import th.co.ais.mimo.acim.api.rest.model.om.EmployeeProfile;
+import th.co.ais.mimo.acim.api.service.exception.ServiceException;
+
+public interface UserRequestService {
+	
+	public boolean approveAllUrByType(UserRequestApproveRequest request,String userLogin) throws ServiceException;
+	
+	public boolean approveUrByType(UserRequestApproveRequest request,String userLogin) throws ServiceException;
+	
+	public RequestNoDetail getRequestNoDetail(String requestNo) throws ServiceException;
+	
+	public List<UrForUser> reloadTokenUrForUser(List<UrForUser> urForUserList,String userLogin) throws ServiceException;
+	
+	public UserRequestDetail getUrDetail(String urId,String userLogin) throws ServiceException;
+	
+	public List<AppFile> getPathfileByAppId(String appId)throws ServiceException;
+	public List<Map<String,String>> validAlreadyRoleApp(DataUserRequestValidate dataUserRequestValidate);
+	public List<Map<String,String>> validURisQueued (DataUserRequestValidate dataUserRequestValidate);
+//	public List<Map<String, String>> validbothAlreadyQueued(DataUserRequestValidate request);
+	public String getAuthenTypeByAppId(String appId);
+	public List<Map<String, EmployeeProfile>> getListApproverManager(List<UserRequestListUser> request);
+	public String getPincodeByUserIdorUsername(String userId,String username);
+	public List<Map<String, Object>> getSaveDatasNewGrid(String idRequestNo);
+	public List<Map<String, String>> checkApproverSamePerson(
+			List<String> users);
+	public List<Map<String, String>> listAppChangeByappName(
+			Map<String, String> request);
+	public BaseGridResponse listAppChangeGridByappId(Map<String, Object> request);
+	public List<Map<String, Object>> listChgAppComboBox(
+			Map<String, Object> request);
+	public String subMitforCommitdataChg(DataUserRequestValidate dataUserRequestValidate , Map<String,String> dataFormApp,List<Map<String, Object>> listDataChg ) throws Exception;
+	public List<Application> getListappBytype(Map<String, String> request) throws ServiceException;
+	public BaseGridResponse getListAppRoleGridByappIdAndType(Map<String, Object> request) throws ServiceException;
+	public DataUserRequestValidate validbothAlreadyQueued(
+			DataUserRequestValidate dataUserRequestValidate);
+	public String subMitforCommitdataTer(
+			DataUserRequestValidate dataUserRequestValidate,
+			Map<String, String> dataFormApp,
+			List<Map<String, Object>> listDataTer) throws Exception;
+
+	public List<Map<String, Object>> getListDatasProfileByappRoleIds(List<String> appRoleIds);
+
+
+	public List<Map<String, Object>> getListEligiblebyAppNameStd(
+			Map<String, Object> request);
+
+	public BaseGridResponse listAppEligibleStdGridByAppId(
+			Map<String, Object> request);
+
+	public List<Map<String, Object>> listappEligibleListSpcByAppname(
+			Map<String, Object> request);
+
+	public BaseGridResponse listAppSpcGridEligibleByAppId(
+			Map<String, Object> request);
+
+	public String subMitforCommitdata(
+			DataUserRequestValidate dataUserRequestValidate,
+			Map<String, String> dataFormApp,
+			List<UserRequestFromGrid> requestFromGrids) throws Exception;
+
+	public BaseGridResponse listAppEligibleStdGridByAppName(
+			Map<String, Object> request);
+
+	public BaseGridResponse listAppSpcGridEligibleByAppName(
+			Map<String, Object> request);
+
+	public BaseGridResponse listAppChangeGridByappName(
+			Map<String, Object> request);
+
+	public BaseGridResponse getListAppRoleGridByappNameAndType(Map<String, Object> request) throws ServiceException;
+
+	public BaseGridResponse listAppTerAuthorGridByappName(Map<String, Object> request)throws ServiceException;
+
+	public String selectFlowIdByTypeTer(String userType)throws ServiceException;
+
+	public List<UserCustodian> selectApproverCustodianByType(
+			Integer type_Approver_forCustodian, String string, String orgCode)throws ServiceException;
+
+}

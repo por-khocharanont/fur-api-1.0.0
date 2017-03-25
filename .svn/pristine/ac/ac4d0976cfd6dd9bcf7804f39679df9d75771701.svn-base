@@ -1,0 +1,86 @@
+package th.co.ais.mimo.acim.api.repository;
+
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+
+import th.co.ais.mimo.acim.api.model.SystemApproveHistory;
+import th.co.ais.mimo.acim.api.model.User;
+import th.co.ais.mimo.acim.api.rest.model.om.Employee;
+
+public interface BatchUserDataServiceRepository {
+	
+	static final String SQL_INSERT_USER = "INSERT INTO [USER] "
+		+ " ([USER_ID],[PINCODE],[USERNAME],[EMAIL],[ENNAME],[ENSURNAME],[ENFULLNAME],[THNAME],[THSURNAME]"
+          + " ,[ORGCODE] ,[ORGNAME],[ORGDESC],[ORGLEVEL],[FCCODE],[FCNAME],[FCDESC],[FCHCODE],[FCHNAME],[FCHDESC]"
+          + " ,[SCCODE],[SCNAME],[SCDESC],[SCHCODE],[SCHNAME],[SCHDESC],[DPCODE],[DPNAME],[DPDESC],[DPHCODE]"
+          + " ,[DPHNAME],[DPHDESC],[BUCODE],[BUNAME],[BUDESC],[BUHCODE],[BUHNAME],[BUHDESC],[COCODE],[CONAME]"
+          + " ,[PHONE],[MOBILE],[POSITION_ID],[POSITION],[MANAGER_PIN],[MANAGER_USERNAME],[MANAGER_EMAIL],[MANAGER_ENNAME]"
+          + " ,[MANAGER_ENSURNAME],[STATUS],[CREATED_DATE],[CREATED_BY],[UPDATED_DATE],[UPDATED_BY],[THFULLNAME])"
+          + " VALUES "
+          + " (#{userId}"
+          + " ,#{pincode}"
+          + " ,#{username}"
+          + " ,#{email}"
+          + " ,#{enName}"
+          + " ,#{enSurName}"
+          + " ,#{enFullName}"
+          + " ,#{thName}"
+          + " ,#{thSurName}"
+          + " ,#{orgCode}"
+          + " ,#{orgName}"
+          + " ,#{orgDesc}"
+          + " ,#{orgLevel}"
+          + " ,#{fcCode}"
+          + " ,#{fcName}"
+          + " ,#{fcDesc}"
+          + " ,#{fcHCode}"
+          + " ,#{fcHName}"
+          + " ,#{fcHDesc}"
+          + " ,#{scCode}"
+          + " ,#{scName}"
+          + " ,#{scDesc}"
+          + " ,#{scHCode}"
+          + " ,#{scHName}"
+          + " ,#{scHDesc}"
+          + " ,#{dpCode}"
+          + " ,#{dpName}"
+          + " ,#{dpDesc}"
+          + " ,#{dpHCode}"
+          + " ,#{dpHName}"
+          + " ,#{dpHDesc}"
+          + " ,#{buCode}"
+          + " ,#{buName}"
+          + " ,#{buDesc}"
+          + " ,#{buHCode}"
+          + " ,#{buHName}"
+          + " ,#{buHDesc}"
+          + " ,#{coCode}"
+          + " ,#{coName}"
+          + " ,#{phone}"
+          + " ,#{mobile}"
+          + " ,#{positionId}"
+          + " ,#{position}"
+          + " ,#{managerPin}"
+          + " ,#{managerUsername}"
+          + " ,#{managerEmail}"
+          + " ,#{managerEnName}"
+          + " ,#{managerEnSurName}"
+          + " ,#{status}"
+          + " , GETDATE()"
+          + " ,#{createdBy}"
+          + " , GETDATE()"
+          + " ,#{updatedBy}"
+          + " ,#{thFullName} )";
+	
+	static final String SQL_SELECT_USER_FROM_PIN = "SELECT PINCODE FROM [USER] WHERE PINCODE = #{pin}";
+
+	
+	@Select(SQL_SELECT_USER_FROM_PIN)
+	public String selectUserFromPin(@Param("pin") String pin) throws RuntimeException;
+	
+	@Insert(SQL_INSERT_USER)
+	public Integer insertUser(User user) throws RuntimeException;
+	
+
+}

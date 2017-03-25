@@ -1,0 +1,260 @@
+package th.co.ais.mimo.acim.api.service.impl;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import th.co.ais.mimo.acim.api.model.JasperModelInput;
+import th.co.ais.mimo.acim.api.repository.ReportRepository;
+import th.co.ais.mimo.acim.api.rest.model.ApplicationReportParams;
+import th.co.ais.mimo.acim.api.rest.model.BaseGridResponse;
+import th.co.ais.mimo.acim.api.rest.model.EligibleReportParams;
+import th.co.ais.mimo.acim.api.rest.model.UrReportParams;
+import th.co.ais.mimo.acim.api.service.JasperReportService;
+import th.co.ais.mimo.acim.api.service.ReportService;
+import th.co.ais.mimo.acim.api.service.exception.ServiceException;
+import th.co.ais.mimo.acim.api.util.CommonUtil;
+import th.co.ais.mimo.acim.api.util.GenerateSqlReport;
+
+
+@Service
+public class ReportServiceImpl implements ReportService {
+	
+	@Autowired
+	ReportRepository reportRepository;
+	
+	@Autowired 
+	JasperReportService jasperReportService;
+	
+	@Override
+	public BaseGridResponse searchReport(Map<String, String> param) throws ServiceException {
+		BaseGridResponse gridResponse = new BaseGridResponse();
+		String appName = param.get("appName");
+		String authenticationType = param.get("authenticationType");
+		String type = param.get("type");
+		String status = param.get("status");
+		String periodType = param.get("periodType");
+		String username = param.get("username");
+//		String requestBy = param.get("requestBy");
+		Date startDate = null;
+		Date endDate = null;
+		if(StringUtils.isNotEmpty(param.get("appName"))&&StringUtils.isNotBlank(param.get("appName"))){
+			appName = CommonUtil.toSqlLikeFormat(param.get("appName"));
+		}
+		if(StringUtils.isNotEmpty(param.get("username"))&&StringUtils.isNotBlank(param.get("username"))){
+			username = CommonUtil.toSqlLikeFormat(param.get("username"));
+		}
+		if(StringUtils.isNotEmpty(param.get("startDate"))&&StringUtils.isNotBlank(param.get("startDate"))){
+			 startDate = CommonUtil.textToDate(param.get("startDate"));
+		}
+		if(StringUtils.isNotEmpty(param.get("endDate"))&&StringUtils.isNotBlank(param.get("endDate"))){
+			 endDate = CommonUtil.textToDate(param.get("endDate"));
+			 endDate = CommonUtil.getDateForSearchAtEndDate(endDate);
+		}
+		Integer page = Integer.parseInt(param.get("page")) ;
+		Integer size = Integer.parseInt(param.get("rows"));
+		Integer startRow = ((page - 1) * size) + 1;
+		Integer endRow = 0;
+		Integer totalRecord = reportRepository.countSearchReportApplication(appName,authenticationType,type,status,periodType,username,startDate,endDate);
+		
+		if (totalRecord == size) {
+			endRow = totalRecord;
+		} else {
+			endRow = (startRow + size) - 1;
+		}
+		List<Map<String,Object>> listDatas = reportRepository.searchReportApplication(appName, authenticationType, type, status, periodType, username, startDate, endDate,startRow,endRow);
+		gridResponse.setPage(page);
+		gridResponse.setRows(listDatas);
+		gridResponse.setRecords(totalRecord);
+		int total = 0;
+		if (totalRecord % size == 0) {
+			total = totalRecord / size;
+		} else {
+			total = (totalRecord / size) + 1;
+		}
+		gridResponse.setTotal(total);
+		
+		return gridResponse;
+	}
+
+	@Override
+	public BaseGridResponse searchUr(Map<String, String> param)throws ServiceException {
+		BaseGridResponse gridResponse = new BaseGridResponse();
+		String requestNo = param.get("requestNo");
+		String urNo = param.get("urNo");
+		String requestType = param.get("requestType");
+		String urStatus = param.get("urStatus");
+		String urNode = param.get("urNode");
+		String urFlow = param.get("urFlow");
+		String userList = param.get("userList");
+		String appName = param.get("appName");
+		String type = param.get("type");
+		String userType = param.get("userType");
+		String authorUser =param.get("authorUser");
+		String requestUrBy = param.get("requestUrBy");
+//		String requestBy = param.get("requestBy");
+		Date startDate = null;
+		Date endDate = null;
+		Date startDateUFU = null;
+		Date endDateUFU = null;
+		if(StringUtils.isNotEmpty(param.get("requestNo"))&&StringUtils.isNotBlank(param.get("requestNo"))){
+			requestNo = CommonUtil.toSqlLikeFormat(param.get("requestNo"));
+		}
+		if(StringUtils.isNotEmpty(param.get("urNo"))&&StringUtils.isNotBlank(param.get("urNo"))){
+			urNo = CommonUtil.toSqlLikeFormat(param.get("urNo"));		
+		}
+		if(StringUtils.isNotEmpty(param.get("userList"))&&StringUtils.isNotBlank(param.get("userList"))){
+			userList = CommonUtil.toSqlLikeFormat(param.get("userList"));
+		}
+		if(StringUtils.isNotEmpty(param.get("appName"))&&StringUtils.isNotBlank(param.get("appName"))){
+			appName = CommonUtil.toSqlLikeFormat(param.get("appName"));
+		}
+		if(StringUtils.isNotEmpty(param.get("requestUrBy"))&&StringUtils.isNotBlank(param.get("requestUrBy"))){
+			requestUrBy =CommonUtil.toSqlLikeFormat(param.get("requestUrBy"));
+		}
+		if(StringUtils.isNotEmpty(param.get("startDate"))&&StringUtils.isNotBlank(param.get("startDate"))){
+			 startDate = CommonUtil.textToDate(param.get("startDate"));
+		}
+		if(StringUtils.isNotEmpty(param.get("endDate"))&&StringUtils.isNotBlank(param.get("endDate"))){
+			 endDate = CommonUtil.textToDate(param.get("endDate"));
+			 endDate = CommonUtil.getDateForSearchAtEndDate(endDate);
+		}
+		if(StringUtils.isNotEmpty(param.get("startDateUFU"))&&StringUtils.isNotBlank(param.get("startDateUFU"))){
+			startDateUFU = CommonUtil.textToDate(param.get("startDateUFU"));
+		}
+		if(StringUtils.isNotEmpty(param.get("endDateUFU"))&&StringUtils.isNotBlank(param.get("endDateUFU"))){
+			endDateUFU = CommonUtil.textToDate(param.get("endDateUFU"));
+			endDateUFU = CommonUtil.getDateForSearchAtEndDate(endDateUFU);
+		}
+		Integer page = Integer.parseInt(param.get("page")) ;
+		Integer size = Integer.parseInt(param.get("rows"));
+		Integer startRow = ((page - 1) * size) + 1;
+		Integer endRow = 0;
+		Integer totalRecord = reportRepository.countSearchReportUr(requestNo,urNo,requestType,urStatus,urNode,urFlow,userList,appName,type,requestUrBy,userType,authorUser,startDate,endDate,startDateUFU,endDateUFU);
+		
+		if (totalRecord == size) {
+			endRow = totalRecord;
+		} else {
+			endRow = (startRow + size) - 1;
+		}
+		List<Map<String,Object>> listDatas = reportRepository.searchReportUr(requestNo, urNo, requestType, urStatus, urNode, urFlow, userList, appName, type, requestUrBy, userType, authorUser, startDate, endDate,startDateUFU,endDateUFU,startRow,endRow);
+		gridResponse.setPage(page);
+		gridResponse.setRows(listDatas);
+		gridResponse.setRecords(totalRecord);
+		int total = 0;
+		if (totalRecord % size == 0) {
+			total = totalRecord / size;
+		} else {
+			total = (totalRecord / size) + 1;
+		}
+		gridResponse.setTotal(total);
+		
+		return gridResponse;
+	}
+	
+	@Override
+	public BaseGridResponse searchEligible(Map<String, String> param)throws ServiceException {
+		BaseGridResponse gridResponse = new BaseGridResponse();
+		String orgCode = CommonUtil.toSqlLikeFormat(param.get("orgCode"));
+		String orgDesc = CommonUtil.toSqlLikeFormat(param.get("orgDesc"));
+		String type = param.get("type");
+		String appName = CommonUtil.toSqlLikeFormat(param.get("appName"));
+		if(StringUtils.isNotEmpty(param.get("orgCode"))&&StringUtils.isNotBlank(param.get("orgCode"))){
+			orgCode = CommonUtil.toSqlLikeFormat(param.get("orgCode"));
+		}
+		if(StringUtils.isNotEmpty(param.get("orgDesc"))&&StringUtils.isNotBlank(param.get("orgDesc"))){
+			orgDesc = CommonUtil.toSqlLikeFormat(param.get("orgDesc"));
+		}
+		if(StringUtils.isNotEmpty(param.get("appName"))&&StringUtils.isNotBlank(param.get("appName"))){
+			appName = CommonUtil.toSqlLikeFormat(param.get("appName"));
+		}
+		Integer page = Integer.parseInt(param.get("page")) ;
+		Integer size = Integer.parseInt(param.get("rows"));
+		Integer startRow = ((page - 1) * size) + 1;
+		Integer endRow = 0;
+		Integer totalRecord = reportRepository.countSearchEligible(orgCode,orgDesc,type,appName);
+		
+		if (totalRecord == size) {
+			endRow = totalRecord;
+		} else {
+			endRow = (startRow + size) - 1;
+		}
+		List<Map<String,Object>> listDatas = reportRepository.searchEligible(orgCode,orgDesc,type,appName,startRow,endRow);
+		gridResponse.setPage(page);
+		gridResponse.setRows(listDatas);
+		gridResponse.setRecords(totalRecord);
+		int total = 0;
+		if (totalRecord % size == 0) {
+			total = totalRecord / size;
+		} else {
+			total = (totalRecord / size) + 1;
+		}
+		gridResponse.setTotal(total);
+		
+		return gridResponse;
+	}
+	
+	@Override
+	public byte[] exportExcelApplicationDefault(ApplicationReportParams paramsApp)throws ServiceException {
+		
+		String statementSql = GenerateSqlReport.exportExcelApplicationDefault(paramsApp);
+		Map<String,Object> mapVariables = new HashMap<String, Object>();
+		String jsonData = CommonUtil.getGson().toJson(paramsApp);
+		mapVariables = CommonUtil.getGson().fromJson(jsonData, Map.class);
+		JasperModelInput jasperModelInput = new JasperModelInput(statementSql,mapVariables);
+		String fileNameTemplate = "ReportApplicationDefault.jrxml";
+		return jasperReportService.downloadExcel(jasperModelInput, fileNameTemplate);
+	}
+
+	@Override
+	public byte[] exportExcelUrDefault(UrReportParams paramsUr)throws ServiceException {
+		String statementSql = GenerateSqlReport.exportExcelUrDefault(paramsUr);
+		Map<String,Object> mapVariables = new HashMap<String, Object>();
+		String jsonData = CommonUtil.getGson().toJson(paramsUr);
+		mapVariables = CommonUtil.getGson().fromJson(jsonData, Map.class);
+		if(StringUtils.isNotEmpty(paramsUr.getStartDate())&&StringUtils.isNotBlank(paramsUr.getStartDate())){
+			mapVariables.put("startDate", CommonUtil.textToDate(paramsUr.getStartDate()));
+		}
+		if(StringUtils.isNotEmpty(paramsUr.getEndDate())&&StringUtils.isNotBlank(paramsUr.getEndDate())){
+			Date endDate = CommonUtil.textToDate(paramsUr.getEndDate());
+			endDate = CommonUtil.getDateForSearchAtEndDate(endDate);
+			mapVariables.put("endDate", endDate);
+		}
+		if(StringUtils.isNotEmpty(paramsUr.getStartDateUFU())&&StringUtils.isNotBlank(paramsUr.getStartDateUFU())){
+			mapVariables.put("startDateUFU", CommonUtil.textToDate(paramsUr.getStartDateUFU()));
+		}
+		if(StringUtils.isNotEmpty(paramsUr.getEndDateUFU())&&StringUtils.isNotBlank(paramsUr.getEndDateUFU())){
+			Date endDateUFU = CommonUtil.textToDate(paramsUr.getEndDateUFU());
+			endDateUFU = CommonUtil.getDateForSearchAtEndDate(endDateUFU);
+			mapVariables.put("endDateUFU", endDateUFU);
+		}	
+		
+		JasperModelInput jasperModelInput = new JasperModelInput(statementSql,mapVariables);
+		String fileNameTemplate = "ReportUrDefault.jrxml";
+		return jasperReportService.downloadExcel(jasperModelInput, fileNameTemplate);
+	}
+
+	@Override
+	public byte[] exportExcelEligibleDefault(EligibleReportParams paramsUr)throws ServiceException {
+		String statementSql = GenerateSqlReport.exportExcelEligibleDefault(paramsUr);
+		Map<String,Object> mapVariables = new HashMap<String, Object>();
+		String jsonData = CommonUtil.getGson().toJson(paramsUr);
+		mapVariables = CommonUtil.getGson().fromJson(jsonData, Map.class);
+		JasperModelInput jasperModelInput = new JasperModelInput(statementSql,mapVariables);
+		String fileNameTemplate = "ReportEligibleDefault.jrxml";
+		return jasperReportService.downloadExcel(jasperModelInput, fileNameTemplate);
+	}
+
+	@Override
+	public List<Map<String, String>> getFlows() throws ServiceException {
+		return reportRepository.getFlows();
+	}
+
+
+
+}

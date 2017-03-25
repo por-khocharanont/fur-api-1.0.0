@@ -1,0 +1,18 @@
+<jboss-deployment-structure xmlns="urn:jboss:deployment-structure:1.2">
+	<deployment>
+		<dependencies>
+			<module name="org.codehaus.jackson.jackson-core-asl"/>
+			<module name="org.codehaus.jackson.jackson-mapper-asl"/>
+		</dependencies>
+		<exclusions>
+			<!-- AS7 will add a dependency on EclipseLink if we don't tell it not to.
+			Since we're bundling it in our jar, we really don't want it to. -->
+			<module name="org.eclipse.persistence"/>
+
+			<!-- Exclude default slf4j in Jboss-->
+			<module name="org.apache.log4j" />
+			<module name="org.slf4j" />
+			<module name="org.slf4j.impl" />
+		</exclusions>
+	</deployment>
+</jboss-deployment-structure>

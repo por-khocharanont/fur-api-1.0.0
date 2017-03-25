@@ -1,0 +1,63 @@
+## Database
+#jdbc.driverClassName=oracle.jdbc.driver.OracleDriver
+#jdbc.url=jdbc:oracle:thin:@10.252.160.122:1521:ACSMTDEV
+#jdbc.username=acsmtxadm
+#jdbc.password=amtx#dev#
+jdbc.driverClassName=com.microsoft.sqlserver.jdbc.SQLServerDriver
+jdbc.url=jdbc:sqlserver://10.252.163.182:1433;databaseName=AcimDB
+jdbc.username=acim_app
+jdbc.password=acim_app
+acim.project.code=TAMXSAUTHEN
+acim.domain=https://acim.ais.co.th/
+ldap.target.endpoint=http://dev-ldapservicews.ais.co.th/Authenticate/AuthenticateService.asmx
+
+
+#jdbc.driverClassName=com.mysql.jdbc.Driver
+#jdbc.employee_db_url=jdbc:mysql://10.252.176.202:3306/employee
+#jdbc.username=root
+#jdbc.password=root
+
+# the settings below are optional -- c3p0 can work with defaults
+jdbc.checkoutTimeout=30000
+jdbc.idleConnectionTestPeriod=30
+jdbc.initialPoolSize=10
+jdbc.maxIdleTime=30
+jdbc.maxPoolSize=100
+jdbc.minPoolSize=10
+jdbc.maxStatements=200
+jdbc.testConnection=true
+jdbc.numHelperThreads=3
+
+### OM Web Service Config
+om.url=test-omws.ais.co.th
+#om.username=ENC(eMpWY4f8tGnz8ltj7jKLPL4YqFHxsJHG)
+#om.password=ENC(a5YHeC88va31+NE2g4q9iqSulHwzyyEp)
+om.username=omws_stg
+om.password=OM@stg!#2014
+om.port=443
+om.domain=corp-ais900dev
+om.code=OMTESTACIM
+om.target.endpoint=https://test-omws.ais.co.th/omws/WS_OM_OMService.svc
+om.timeout=120
+string.length=500000
+
+### Config Email
+host.email=10.252.160.150
+port.email=22
+protocol.email=smtp
+username.email=
+password.email=
+emailAddress.email=adminAcim@corp900.co.th
+
+transport.protocol.email="smtp"
+smtp.auth.email=false
+smtp.starttls.enable.email=false
+smtp.ehlo.email=false
+debug.email=true
+
+# Address Server
+acim-api.ipaddress=10.252.160.150
+acim-api.host=10.252.160.150
+
+### Jasper Report
+path.file.report=D:/ACIM-II/Report/
